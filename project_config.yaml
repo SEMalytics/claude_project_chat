@@ -1,0 +1,73 @@
+# Project Identity
+project:
+  name: "Claude Project Chat"
+  description: "Universal chat interface for Claude Projects"
+  claude_project_id: "${CLAUDE_PROJECT_ID}"
+
+# UI Customization
+ui:
+  title: "Claude Chat"
+  subtitle: "Powered by Anthropic"
+  primary_color: "#3b82f6"
+  show_logo: false
+  logo_path: ""
+
+# Feature Flags
+features:
+  file_upload: true
+  url_fetching: true
+  multi_file: true
+  conversation_history: true
+  export_chat: false
+
+# File Processing
+files:
+  allowed_extensions:
+    - pdf
+    - docx
+    - txt
+    - md
+  max_size_mb: 10
+  max_files: 5
+
+# Preconfigured Prompts
+prompts:
+  - id: "general_chat"
+    label: "General Chat"
+    template: "{user_input}"
+    requires_files: false
+    requires_input: true
+    placeholder: "Ask me anything..."
+
+  - id: "document_analysis"
+    label: "Analyze Document"
+    template: "Please analyze this document: {user_input}"
+    requires_files: true
+    min_files: 1
+    placeholder: "Optional: What to focus on..."
+
+  - id: "compare_documents"
+    label: "Compare Documents"
+    template: "Compare these documents and highlight key differences"
+    requires_files: true
+    min_files: 2
+    placeholder: "Optional: Specific aspects to compare..."
+
+  - id: "summarize"
+    label: "Summarize Content"
+    template: "Please provide a concise summary of the following: {user_input}"
+    requires_files: false
+    requires_input: true
+    placeholder: "Enter text to summarize..."
+
+  - id: "url_analysis"
+    label: "Analyze Website"
+    template: "Analyze this website content: {url}"
+    requires_url: true
+    placeholder: "Enter URL..."
+
+# Custom Instructions (prepended to every request)
+system_context: |
+  You are a helpful assistant working within a Claude Project.
+  Follow the project's custom instructions and knowledge base.
+  Provide clear, accurate, and helpful responses.

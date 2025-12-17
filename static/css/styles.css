@@ -1,0 +1,202 @@
+/**
+ * Claude Project Chat Interface
+ * Custom Styles
+ */
+
+/* Smooth scrolling for chat history */
+#chatHistory {
+    scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for chat history */
+#chatHistory::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chatHistory::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#chatHistory::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+#chatHistory::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+/* Message animations */
+.user-message,
+.assistant-message {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Drop zone hover state */
+#dropZone.drag-over {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+/* Code block styling */
+pre code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* Response formatting */
+.assistant-message h1,
+.assistant-message h2,
+.assistant-message h3 {
+    color: inherit;
+}
+
+.assistant-message ul,
+.assistant-message ol {
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.assistant-message li {
+    margin-bottom: 0.25rem;
+}
+
+/* Toast notifications */
+.toast-enter {
+    animation: slideIn 0.3s ease-out;
+}
+
+.toast-exit {
+    animation: slideOut 0.3s ease-in;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Button states */
+button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+button:disabled {
+    cursor: not-allowed;
+}
+
+/* Textarea auto-resize support (optional) */
+textarea {
+    min-height: 80px;
+}
+
+/* File input styling */
+input[type="file"] {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    #chatHistory {
+        max-height: 400px;
+    }
+
+    .max-w-\[80\%\] {
+        max-width: 90%;
+    }
+}
+
+/* Dark mode support (optional - add class "dark" to body) */
+body.dark {
+    background-color: #1a1a2e;
+    color: #eaeaea;
+}
+
+body.dark .bg-white {
+    background-color: #16213e;
+}
+
+body.dark .bg-gray-100 {
+    background-color: #0f3460;
+}
+
+body.dark .text-gray-800 {
+    color: #eaeaea;
+}
+
+body.dark .text-gray-500 {
+    color: #a0a0a0;
+}
+
+body.dark .border-gray-200,
+body.dark .border-gray-300 {
+    border-color: #2a3f5f;
+}
+
+/* Print styles */
+@media print {
+    .container {
+        max-width: none;
+    }
+
+    #fileUploadSection,
+    #sendBtn,
+    #clearBtn,
+    #loadingIndicator {
+        display: none;
+    }
+
+    #chatHistory {
+        max-height: none;
+        overflow: visible;
+    }
+}

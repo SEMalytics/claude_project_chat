@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config.title | default('Claude Chat') }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script>
+        // Pass config to JavaScript
+        window.APP_CONFIG = {
+            features: {{ features | tojson | safe }},
+            prompts: {{ prompts | tojson | safe }},
+            files: {{ files_config | tojson | safe }},
+            ui: {{ config | tojson | safe }}
+        };
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto max-w-4xl p-4 md:p-6">
+        <!-- Header -->
+        <header class="mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
+                {{ config.title | default('Claude Chat') }}
+            </h1>
+            {% if config.subtitle %}
+            <p class="text-gray-500 mt-1">{{ config.subtitle }}</p>
+            {% endif %}
+        </header>
+
+        <!-- Main Chat Container -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Input Section -->
+            <div class="p-4 md:p-6 border-b border-gray-200">
+                <!-- Prompt Selection -->
+                <div class="mb-4">
+                    <label for="promptSelect" class="block text-sm font-medium text-gray-700 mb-2">
+                        Select Prompt Type
+                    </label>
+                    <select id="promptSelect"
+                            class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white">
+                        {% for prompt in prompts %}
+                        <option value="{{ prompt.id }}"
+                                data-requires-files="{{ prompt.requires_files | default(false) | lower }}"
+                                data-requires-url="{{ prompt.requires_url | default(false) | lower }}"
+                                data-requires-input="{{ prompt.requires_input | default(true) | lower }}"
+                                data-min-files="{{ prompt.min_files | default(0) }}"
+                                data-placeholder="{{ prompt.placeholder | default('Enter your message...') }}">
+                            {{ prompt.label }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Message Input -->
+                <div class="mb-4">
+                    <label for="messageInput" class="block text-sm font-medium text-gray-700 mb-2">
+                        Your Message
+                    </label>
+                    <textarea id="messageInput"
+                              rows="3"
+                              placeholder="Enter your message..."
+                              class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+                </div>
+
+                <!-- File Upload Section -->
+                {% if features.file_upload %}
+                <div class="mb-4" id="fileUploadSection">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Upload Files
+                        <span class="text-gray-400 font-normal">
+                            ({{ files_config.allowed_extensions | join(', ') | upper }})
+                        </span>
+                    </label>
+                    <div id="dropZone"
+                         class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition-colors">
+                        <input type="file" id="fileInput"
+                               class="hidden"
+                               {% if features.multi_file %}multiple{% endif %}
+                               accept="{{ files_config.allowed_extensions | map('regex_replace', '^', '.') | join(',') }}">
+                        <div class="text-gray-500">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <p class="mt-2">Drop files here or <span class="text-blue-600">browse</span></p>
+                            <p class="text-sm text-gray-400 mt-1">Max {{ files_config.max_size_mb }}MB per file</p>
+                        </div>
+                    </div>
+                    <!-- Uploaded Files List -->
+                    <div id="uploadedFiles" class="mt-3 space-y-2 hidden"></div>
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons -->
+                <div class="flex gap-3">
+                    <button id="sendBtn"
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        Send Message
+                    </button>
+                    <button id="clearBtn"
+                            class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Clear Chat
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat History -->
+            <div id="chatHistory" class="p-4 md:p-6 space-y-4 max-h-[500px] overflow-y-auto">
+                <div id="emptyState" class="text-center py-12 text-gray-400">
+                    <svg class="mx-auto h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <p class="mt-4">No messages yet. Start a conversation!</p>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="hidden p-4 border-t border-gray-200">
+                <div class="flex items-center gap-3">
+                    <div class="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+                    <span class="text-gray-600">Claude is thinking...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="mt-6 text-center text-sm text-gray-400">
+            <p>{{ project.name | default('Claude Project Chat') }} &mdash; Powered by Claude</p>
+        </footer>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
