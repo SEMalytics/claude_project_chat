@@ -1,0 +1,1468 @@
+{
+  "version": "1.0",
+  "exportedAt": "2025-12-18T15:45:49.564581",
+  "templates": [
+    {
+      "id": "website_positioning_audit",
+      "name": "Website Positioning Audit",
+      "description": "Analyze a company website for positioning clarity and messaging consistency",
+      "category": "clarity",
+      "tags": [
+        "website",
+        "positioning",
+        "messaging",
+        "clarity"
+      ],
+      "template": "Analyze the website at [website_url] for strategic positioning clarity.\n\nFocus on:\n1. Value proposition clarity\n2. Messaging consistency across pages\n3. Target audience definition\n4. Differentiation from competitors\n5. Call-to-action coherence\n\nGenerate a Concept Clarity Score with specific examples of:\n- Clear positioning elements\n- Divergence points across pages\n- Recommendations for improvement\n\nWebsite URL: [website_url]\nAdditional context: [additional_context]\n",
+      "variables": [
+        {
+          "name": "website_url",
+          "label": "Website URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "https://example.com",
+          "helpText": "The website to analyze for positioning clarity"
+        },
+        {
+          "name": "additional_context",
+          "label": "Additional Context",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Any additional context about the company, industry, or specific concerns...",
+          "helpText": "Optional background information to inform the analysis"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564508",
+      "updatedAt": "2025-12-18T15:45:49.564514"
+    },
+    {
+      "id": "linkedin_profile_positioning",
+      "name": "LinkedIn Profile Positioning",
+      "description": "Analyze LinkedIn profile for professional positioning and messaging clarity",
+      "category": "clarity",
+      "tags": [
+        "linkedin",
+        "personal brand",
+        "career",
+        "positioning"
+      ],
+      "template": "Analyze the LinkedIn profile at [linkedin_url] for professional positioning clarity.\n\nEvaluate:\n1. Professional identity clarity (what they do)\n2. Value proposition consistency\n3. Career narrative coherence\n4. Skills-claims alignment\n5. Experience-expertise matching\n\nGenerate a Personal Brand Clarity Score with:\n- Strengths in positioning\n- Divergence points (conflicting messages)\n- Gaps or missing elements\n- Recommendations for stronger positioning\n\nLinkedIn URL: [linkedin_url]\nTarget audience: [target_audience]\nCareer goals: [career_goals]\n",
+      "variables": [
+        {
+          "name": "linkedin_url",
+          "label": "LinkedIn Profile URL",
+          "type": "url",
+          "required": true,
+          "placeholder": "https://linkedin.com/in/username",
+          "helpText": "The LinkedIn profile to analyze"
+        },
+        {
+          "name": "target_audience",
+          "label": "Target Audience",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Tech recruiters, VCs, potential clients",
+          "helpText": "Who should this profile appeal to?"
+        },
+        {
+          "name": "career_goals",
+          "label": "Career Goals",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "What career outcomes are they seeking?",
+          "helpText": "Context about desired career direction"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564516",
+      "updatedAt": "2025-12-18T15:45:49.564517"
+    },
+    {
+      "id": "multi_property_positioning",
+      "name": "Multi-Property Positioning Check",
+      "description": "Analyze consistency across multiple company properties (website, social, blogs)",
+      "category": "clarity",
+      "tags": [
+        "consistency",
+        "multi-channel",
+        "brand",
+        "positioning"
+      ],
+      "template": "Analyze positioning consistency across multiple URLs for [company_name].\n\nURLs to analyze:\n[url_list]\n\nCompare and contrast:\n1. Core value proposition across properties\n2. Messaging consistency\n3. Visual brand alignment\n4. Target audience framing\n5. Differentiation claims\n\nGenerate:\n- Cross-Property Consistency Score (0-100)\n- Property-specific clarity scores\n- Major divergence points between properties\n- Unified positioning recommendations\n\nCompany name: [company_name]\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Acme Inc",
+          "helpText": "The company being analyzed"
+        },
+        {
+          "name": "url_list",
+          "label": "URLs to Analyze",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "https://company.com\nhttps://twitter.com/company\nhttps://linkedin.com/company/company\n",
+          "helpText": "List of URLs to analyze, one per line"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564518",
+      "updatedAt": "2025-12-18T15:45:49.564519"
+    },
+    {
+      "id": "holiday_roast",
+      "name": "Ho Ho Holiday ROAST",
+      "description": "Santa's brutally honest clarity assessment (delivered with holiday cheer)",
+      "category": "clarity",
+      "tags": [
+        "roast",
+        "holiday",
+        "fun",
+        "analysis"
+      ],
+      "template": "SANTA'S STRATEGIC CLARITY WORKSHOP\n\nHo ho ho! Santa's checking his list, and [company_name] has been... well, let's see!\n\nAnalyze [company_name]'s positioning with Santa's special NAUGHTY OR NICE SCALE:\n\nMaterials to review:\n[materials_description]\n\nGenerate a ROAST-style analysis with:\n\nTHE NAUGHTY LIST (What's Wrong):\n- Messaging coal lumps (divergence points)\n- Positioning reindeer crashes (unclear differentiation)\n- Market confusion snowstorms (audience confusion)\n\nTHE NICE LIST (What's Working):\n- Clarity gifts (strong positioning elements)\n- Consistency candy canes (aligned messaging)\n\nSANTA'S VERDICT:\n- Concept Clarity Score: [X]/100\n- Naughty or Nice? [Determination]\n- How to get on the Nice List: [Specific recommendations]\n\nREMEMBER: Santa's watching! Better clean up that positioning before the big Q1 funding round!\n\nMake it funny but truthful. Channel a mix of:\n- Loving roast comedy\n- Genuine insight\n- Holiday cheer\n- Useful feedback\n\nCompany name: [company_name]\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company to Roast",
+          "type": "text",
+          "required": true,
+          "placeholder": "Acme Inc",
+          "helpText": "The company Santa will be reviewing"
+        },
+        {
+          "name": "materials_description",
+          "label": "Materials for Santa to Review",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Website: https://...\nPitch deck summary: ...\nRecent press release: ...\n",
+          "helpText": "What materials should Santa review?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564520",
+      "updatedAt": "2025-12-18T15:45:49.564521"
+    },
+    {
+      "id": "competitive_positioning_matrix",
+      "name": "Competitive Positioning Matrix",
+      "description": "Compare positioning clarity across competitors",
+      "category": "clarity",
+      "tags": [
+        "competitive",
+        "comparison",
+        "matrix",
+        "positioning"
+      ],
+      "template": "Compare positioning clarity across competitors in [industry]:\n\nCompanies to analyze:\n1. [company_1]\n2. [company_2]\n3. [company_3]\n\nFor each company, provide:\n- Concept Clarity Score\n- Core value proposition\n- Differentiation claim\n- Target audience\n- Positioning strengths/weaknesses\n\nThen create a competitive positioning matrix showing:\n- Who has the clearest positioning\n- Where positioning overlaps (crowded space)\n- Where gaps exist (opportunity)\n- Recommendations for [your_company] to differentiate\n\nYour company: [your_company]\n",
+      "variables": [
+        {
+          "name": "industry",
+          "label": "Industry/Market",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., B2B SaaS, FinTech, E-commerce",
+          "helpText": "The industry or market being analyzed"
+        },
+        {
+          "name": "company_1",
+          "label": "Competitor 1 Website",
+          "type": "url",
+          "required": true,
+          "placeholder": "https://competitor1.com"
+        },
+        {
+          "name": "company_2",
+          "label": "Competitor 2 Website",
+          "type": "url",
+          "required": true,
+          "placeholder": "https://competitor2.com"
+        },
+        {
+          "name": "company_3",
+          "label": "Competitor 3 Website",
+          "type": "url",
+          "required": true,
+          "placeholder": "https://competitor3.com"
+        },
+        {
+          "name": "your_company",
+          "label": "Your Company",
+          "type": "text",
+          "required": false,
+          "placeholder": "Your company name",
+          "helpText": "Your company name for differentiation recommendations"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564522",
+      "updatedAt": "2025-12-18T15:45:49.564523"
+    },
+    {
+      "id": "pitch_deck_analysis",
+      "name": "Investor Pitch Deck Analysis",
+      "description": "Analyze pitch deck for investor comprehension and clarity",
+      "category": "clarity",
+      "tags": [
+        "pitch",
+        "investor",
+        "fundraising",
+        "deck"
+      ],
+      "template": "Analyze this pitch deck for investor clarity and comprehension.\n\nDeck description: [deck_description]\nTarget investor stage: [investor_stage]\n\nEvaluate:\n1. Problem-solution clarity\n2. Value proposition strength\n3. Market positioning\n4. Differentiation clarity\n5. Ask clarity (what you want)\n\nGenerate:\n- Pitch Clarity Score (0-100)\n- Slide-by-slide analysis\n- Investor confusion risks\n- Recommendations for clearer storytelling\n\nFocus on: Can an investor understand and remember your pitch 48 hours later?\n",
+      "variables": [
+        {
+          "name": "deck_description",
+          "label": "Pitch Deck Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe your pitch deck or paste key content from each slide...",
+          "helpText": "Describe your pitch deck or paste key content"
+        },
+        {
+          "name": "investor_stage",
+          "label": "Target Investor Stage",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B+",
+            "Strategic/Corporate"
+          ]
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564524",
+      "updatedAt": "2025-12-18T15:45:49.564524"
+    },
+    {
+      "id": "launch_messaging_clarity",
+      "name": "Launch Messaging Clarity",
+      "description": "Analyze product launch messaging for market clarity",
+      "category": "clarity",
+      "tags": [
+        "launch",
+        "product",
+        "messaging",
+        "marketing"
+      ],
+      "template": "Analyze product launch messaging for [product_name].\n\nLaunch materials:\n[launch_materials]\n\nTarget audience: [target_audience]\nLaunch date: [launch_date]\n\nEvaluate:\n1. Product value proposition clarity\n2. Feature-benefit alignment\n3. Target audience definition\n4. Differentiation from alternatives\n5. Call-to-action clarity\n\nGenerate:\n- Launch Messaging Score (0-100)\n- Market comprehension assessment\n- Confusion risks\n- Pre-launch messaging optimization recommendations\n\nCritical question: Will your target market understand WHY they should care in first 30 seconds?\n",
+      "variables": [
+        {
+          "name": "product_name",
+          "label": "Product Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Product name"
+        },
+        {
+          "name": "launch_materials",
+          "label": "Launch Materials",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe or paste launch materials (press release, landing page copy, etc.)",
+          "helpText": "Describe or paste your launch materials"
+        },
+        {
+          "name": "target_audience",
+          "label": "Target Audience",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who is this launch targeting?"
+        },
+        {
+          "name": "launch_date",
+          "label": "Launch Date",
+          "type": "date",
+          "required": false,
+          "helpText": "Planned launch date (optional)"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564525",
+      "updatedAt": "2025-12-18T15:45:49.564526"
+    },
+    {
+      "id": "sales_page_clarity",
+      "name": "Sales Page Clarity Audit",
+      "description": "Analyze sales page for clarity issues that hurt conversion",
+      "category": "clarity",
+      "tags": [
+        "sales",
+        "conversion",
+        "landing page",
+        "clarity"
+      ],
+      "template": "Analyze this sales page for clarity issues affecting conversion:\n\nPage URL: [page_url]\nOR Page content: [page_content]\n\nConversion goal: [conversion_goal]\nCurrent conversion rate: [current_rate]\n\nEvaluate from buyer perspective:\n1. Value proposition clarity (first 5 seconds)\n2. Offer clarity (what exactly am I buying?)\n3. Benefit clarity (what's in it for me?)\n4. Trust signals (why should I believe you?)\n5. Action clarity (what happens when I click?)\n\nGenerate:\n- Sales Page Clarity Score (0-100)\n- Friction points causing confusion\n- Clarity improvements predicted to increase conversion\n- A/B test recommendations\n\nFocus on: What's stopping a ready buyer from converting due to confusion?\n",
+      "variables": [
+        {
+          "name": "page_url",
+          "label": "Sales Page URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://example.com/pricing",
+          "helpText": "URL of the sales page to analyze"
+        },
+        {
+          "name": "page_content",
+          "label": "Or Page Content",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Paste sales page content if no URL available...",
+          "helpText": "Alternative to URL - paste the page content"
+        },
+        {
+          "name": "conversion_goal",
+          "label": "Conversion Goal",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., Sign up for trial, Purchase, Book demo",
+          "helpText": "What action should visitors take?"
+        },
+        {
+          "name": "current_rate",
+          "label": "Current Conversion Rate",
+          "type": "number",
+          "required": false,
+          "placeholder": "2.5",
+          "helpText": "Current conversion rate % (optional)",
+          "validation": {
+            "min": 0,
+            "max": 100
+          }
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564532",
+      "updatedAt": "2025-12-18T15:45:49.564533"
+    },
+    {
+      "id": "developer_docs_audit",
+      "name": "Developer Documentation Audit",
+      "description": "Analyze API/technical documentation for developer comprehension",
+      "category": "clarity",
+      "tags": [
+        "documentation",
+        "developer",
+        "technical",
+        "api"
+      ],
+      "template": "Analyze technical documentation for developer clarity.\n\nDocumentation: [doc_url_or_content]\nTarget developer: [developer_level]\n\nEvaluate:\n1. Conceptual clarity (big picture)\n2. Getting started clarity\n3. Example quality and clarity\n4. Error handling clarity\n5. Architecture explanation\n\nGenerate:\n- Developer Documentation Score (0-100)\n- Comprehension blockers\n- Missing explanations\n- Time-to-first-success optimization\n\nCritical metric: Can a developer get \"hello world\" working in under 15 minutes?\n",
+      "variables": [
+        {
+          "name": "doc_url_or_content",
+          "label": "Documentation",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Documentation URL or paste content",
+          "helpText": "Documentation URL or paste the documentation content"
+        },
+        {
+          "name": "developer_level",
+          "label": "Target Developer Level",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Beginner",
+            "Intermediate",
+            "Advanced",
+            "All levels"
+          ]
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564535",
+      "updatedAt": "2025-12-18T15:45:49.564535"
+    },
+    {
+      "id": "job_posting_clarity",
+      "name": "Job Posting Clarity Check",
+      "description": "Analyze job posting for candidate comprehension and attraction",
+      "category": "clarity",
+      "tags": [
+        "job posting",
+        "recruiting",
+        "hiring",
+        "clarity"
+      ],
+      "template": "Analyze this job posting for candidate clarity and appeal.\n\nPosition: [job_title]\nJob posting: [job_posting]\n\nEvaluate:\n1. Role clarity (what will I actually do?)\n2. Requirements clarity (what do I need?)\n3. Company value prop (why join?)\n4. Growth opportunity clarity\n5. Application process clarity\n\nGenerate:\n- Job Posting Clarity Score (0-100)\n- Candidate confusion risks\n- Missing information\n- Recommendations to attract right candidates and deter wrong ones\n\nFocus on: Does this job posting filter effectively AND attract strongly?\n",
+      "variables": [
+        {
+          "name": "job_title",
+          "label": "Job Title",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., Senior Product Manager"
+        },
+        {
+          "name": "job_posting",
+          "label": "Job Posting Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste the full job posting content...",
+          "helpText": "Paste the complete job posting text"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564537",
+      "updatedAt": "2025-12-18T15:45:49.564537"
+    },
+    {
+      "id": "email_marketing_audit",
+      "name": "Email Marketing Message Audit",
+      "description": "Analyze email campaign for clarity and action-driving power",
+      "category": "clarity",
+      "tags": [
+        "email",
+        "marketing",
+        "campaign",
+        "clarity"
+      ],
+      "template": "Analyze this email campaign for message clarity.\n\nEmail subject: [subject_line]\nEmail content: [email_content]\nCampaign goal: [campaign_goal]\nTarget segment: [target_segment]\n\nEvaluate:\n1. Subject line clarity (what's inside?)\n2. Value proposition (why should I care?)\n3. Offer clarity (what am I getting?)\n4. Action clarity (what should I do?)\n5. Urgency/motivation clarity\n\nGenerate:\n- Email Clarity Score (0-100)\n- Confusion points\n- Unsubscribe risks\n- Optimization recommendations\n\nKey question: If recipient skims in 10 seconds, do they know what to do and why?\n",
+      "variables": [
+        {
+          "name": "subject_line",
+          "label": "Email Subject Line",
+          "type": "text",
+          "required": true,
+          "placeholder": "Your email subject line"
+        },
+        {
+          "name": "email_content",
+          "label": "Email Body Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste the email body content..."
+        },
+        {
+          "name": "campaign_goal",
+          "label": "Campaign Goal",
+          "type": "text",
+          "required": true,
+          "placeholder": "What should recipients do?"
+        },
+        {
+          "name": "target_segment",
+          "label": "Target Segment",
+          "type": "text",
+          "required": false,
+          "placeholder": "Who is receiving this email?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564538",
+      "updatedAt": "2025-12-18T15:45:49.564539"
+    },
+    {
+      "id": "about_page_positioning",
+      "name": "About Page Positioning",
+      "description": "Analyze \"About\" page for company story clarity",
+      "category": "clarity",
+      "tags": [
+        "about page",
+        "brand story",
+        "positioning",
+        "narrative"
+      ],
+      "template": "Analyze the \"About\" page for [company_name].\n\nAbout page: [about_page]\n\nEvaluate:\n1. Company purpose clarity (why we exist)\n2. Origin story coherence\n3. Value proposition clarity\n4. Differentiation explanation\n5. Team/culture transparency\n\nGenerate:\n- About Page Clarity Score (0-100)\n- Story gaps or confusion\n- Emotional connection opportunities\n- Recommendations for stronger narrative\n\nCritical test: After reading, can someone explain your company to a friend?\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Company name"
+        },
+        {
+          "name": "about_page",
+          "label": "About Page Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste about page content or URL",
+          "helpText": "About page content or URL"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564540",
+      "updatedAt": "2025-12-18T15:45:49.564541"
+    },
+    {
+      "id": "talk_proposal_clarity",
+      "name": "Talk Proposal Clarity Check",
+      "description": "Analyze conference talk abstract for selection committee clarity",
+      "category": "clarity",
+      "tags": [
+        "conference",
+        "talk",
+        "abstract",
+        "speaking"
+      ],
+      "template": "Analyze this conference talk abstract for selection clarity.\n\nTalk title: [talk_title]\nAbstract: [abstract]\nConference: [conference_name]\nTrack: [track]\n\nEvaluate from selection committee perspective:\n1. Talk topic clarity (what is it about?)\n2. Value proposition (why should attendees care?)\n3. Differentiation (why this over other talks?)\n4. Speaker credibility signals\n5. Actionable takeaway clarity\n\nGenerate:\n- Abstract Clarity Score (0-100)\n- Selection barriers\n- Attendee appeal assessment\n- Recommendations to improve acceptance odds\n\nKey question: Can a reviewer visualize the talk and want to attend?\n",
+      "variables": [
+        {
+          "name": "talk_title",
+          "label": "Talk Title",
+          "type": "text",
+          "required": true,
+          "placeholder": "Your talk title"
+        },
+        {
+          "name": "abstract",
+          "label": "Talk Abstract",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Your talk abstract/description"
+        },
+        {
+          "name": "conference_name",
+          "label": "Conference Name",
+          "type": "text",
+          "required": false,
+          "placeholder": "Conference name (optional)"
+        },
+        {
+          "name": "track",
+          "label": "Conference Track",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., Developer Tools, AI/ML, Leadership"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564542",
+      "updatedAt": "2025-12-18T15:45:49.564543"
+    },
+    {
+      "id": "social_bio_positioning",
+      "name": "Social Bio Positioning",
+      "description": "Analyze social media bio for instant comprehension",
+      "category": "clarity",
+      "tags": [
+        "social media",
+        "bio",
+        "personal brand",
+        "positioning"
+      ],
+      "template": "Analyze social media bio for [person_name].\n\nPlatform: [platform]\nCurrent bio: [current_bio]\nTarget audience: [target_audience]\nGoal: [profile_goal]\n\nEvaluate (3-second test):\n1. Identity clarity (who are you?)\n2. Value proposition (what do you do?)\n3. Credibility signals (why trust you?)\n4. Call-to-action clarity\n5. Personality/voice\n\nGenerate:\n- Bio Clarity Score (0-100)\n- First impression analysis\n- Missed opportunities\n- Optimized bio recommendations\n\nCritical metric: In 3 seconds, does someone know if they should follow/connect?\n",
+      "variables": [
+        {
+          "name": "person_name",
+          "label": "Person's Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Name"
+        },
+        {
+          "name": "platform",
+          "label": "Platform",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Twitter/X",
+            "LinkedIn",
+            "Instagram",
+            "TikTok",
+            "Other"
+          ]
+        },
+        {
+          "name": "current_bio",
+          "label": "Current Bio",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste current bio text"
+        },
+        {
+          "name": "target_audience",
+          "label": "Target Audience",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who should this appeal to?"
+        },
+        {
+          "name": "profile_goal",
+          "label": "Profile Goal",
+          "type": "text",
+          "required": true,
+          "placeholder": "What should this profile achieve?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564544",
+      "updatedAt": "2025-12-18T15:45:49.564544"
+    },
+    {
+      "id": "newsletter_positioning_audit",
+      "name": "Newsletter Positioning Audit",
+      "description": "Analyze newsletter for subscriber value clarity",
+      "category": "clarity",
+      "tags": [
+        "newsletter",
+        "content",
+        "subscription",
+        "value prop"
+      ],
+      "template": "Analyze newsletter positioning for [newsletter_name].\n\nNewsletter description: [newsletter_description]\nSample issues: [sample_content]\nTarget subscriber: [target_subscriber]\n\nEvaluate:\n1. Value proposition clarity (why subscribe?)\n2. Content promise consistency\n3. Differentiation from alternatives\n4. Frequency/commitment clarity\n5. Call-to-subscribe effectiveness\n\nGenerate:\n- Newsletter Clarity Score (0-100)\n- Subscription barriers\n- Value proposition gaps\n- Recommendations to increase conversions\n\nKey question: Can someone decide to subscribe in 30 seconds with confidence?\n",
+      "variables": [
+        {
+          "name": "newsletter_name",
+          "label": "Newsletter Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Newsletter name"
+        },
+        {
+          "name": "newsletter_description",
+          "label": "Newsletter Description",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "How do you describe your newsletter?"
+        },
+        {
+          "name": "sample_content",
+          "label": "Sample Content",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Paste a recent issue or describe typical content"
+        },
+        {
+          "name": "target_subscriber",
+          "label": "Target Subscriber",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who is this newsletter for?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564545",
+      "updatedAt": "2025-12-18T15:45:49.564546"
+    },
+    {
+      "id": "github_repo_positioning",
+      "name": "Open Source Project Positioning",
+      "description": "Analyze GitHub repo for contributor comprehension and adoption",
+      "category": "clarity",
+      "tags": [
+        "github",
+        "open source",
+        "readme",
+        "developer"
+      ],
+      "template": "Analyze GitHub repository for project clarity.\n\nRepository: [repo_url]\nOR describe: [repo_description]\n\nEvaluate:\n1. Project purpose clarity (what does it do?)\n2. Use case clarity (when would I use it?)\n3. Getting started clarity\n4. Differentiation from alternatives\n5. Contribution pathway clarity\n\nGenerate:\n- Repository Clarity Score (0-100)\n- Adoption barriers\n- Contributor friction points\n- README optimization recommendations\n\nCritical questions:\n- Can someone understand the project in 30 seconds?\n- Can they run it in 5 minutes?\n",
+      "variables": [
+        {
+          "name": "repo_url",
+          "label": "GitHub Repository URL",
+          "type": "url",
+          "required": false,
+          "placeholder": "https://github.com/user/repo"
+        },
+        {
+          "name": "repo_description",
+          "label": "Or Describe the Project",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Describe the project if no URL available"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564547",
+      "updatedAt": "2025-12-18T15:45:49.564548"
+    },
+    {
+      "id": "onboarding_clarity_audit",
+      "name": "User Onboarding Clarity Audit",
+      "description": "Analyze user onboarding for comprehension and success",
+      "category": "clarity",
+      "tags": [
+        "onboarding",
+        "ux",
+        "user experience",
+        "activation"
+      ],
+      "template": "Analyze onboarding flow for [product_name].\n\nOnboarding description: [onboarding_description]\nUser type: [user_type]\nSuccess metric: [success_metric]\n\nEvaluate from new user perspective:\n1. Value clarity (why am I here?)\n2. Step clarity (what do I do now?)\n3. Progress clarity (how far to go?)\n4. Success clarity (when am I done?)\n5. Next step clarity (what happens next?)\n\nGenerate:\n- Onboarding Clarity Score (0-100)\n- Drop-off risk points\n- Confusion moments\n- Recommendations to improve completion rate\n\nKey metric: What % reach first \"aha moment\" vs. churn?\n",
+      "variables": [
+        {
+          "name": "product_name",
+          "label": "Product Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Product name"
+        },
+        {
+          "name": "onboarding_description",
+          "label": "Onboarding Flow Description",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe each step of your onboarding flow"
+        },
+        {
+          "name": "user_type",
+          "label": "User Type",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who is being onboarded?"
+        },
+        {
+          "name": "success_metric",
+          "label": "Success Metric",
+          "type": "text",
+          "required": true,
+          "placeholder": "What defines successful onboarding?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564549",
+      "updatedAt": "2025-12-18T15:45:49.564549"
+    },
+    {
+      "id": "pricing_comprehension_audit",
+      "name": "Pricing Comprehension Audit",
+      "description": "Analyze pricing page for decision clarity",
+      "category": "clarity",
+      "tags": [
+        "pricing",
+        "conversion",
+        "monetization",
+        "clarity"
+      ],
+      "template": "Analyze pricing page for [product_name].\n\nPricing page: [pricing_url_or_content]\n\nEvaluate from buyer perspective:\n1. Tier differentiation clarity (what's the difference?)\n2. Value-per-tier clarity (what do I get?)\n3. Recommendation clarity (which should I choose?)\n4. Pricing model clarity (how am I charged?)\n5. Change/cancel clarity (what if I need to change?)\n\nGenerate:\n- Pricing Clarity Score (0-100)\n- Decision paralysis risks\n- Tier confusion points\n- Recommendations to improve conversion\n\nKey questions:\n- Can someone choose the right tier in 2 minutes?\n- Do they know what happens after purchase?\n",
+      "variables": [
+        {
+          "name": "product_name",
+          "label": "Product/Service Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Product name"
+        },
+        {
+          "name": "pricing_url_or_content",
+          "label": "Pricing Page",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Pricing page URL or paste content",
+          "helpText": "URL or paste the pricing page content"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564551",
+      "updatedAt": "2025-12-18T15:45:49.564551"
+    },
+    {
+      "id": "investment_thesis_analysis",
+      "name": "Investment Thesis Analysis",
+      "description": "Analyze investment memo for decision-maker clarity",
+      "category": "clarity",
+      "tags": [
+        "investment",
+        "memo",
+        "thesis",
+        "fundraising"
+      ],
+      "template": "Analyze investment memo for [company_name].\n\nInvestment memo: [memo_content]\nInvestment stage: [investment_stage]\nCheck size: [check_size]\n\nEvaluate from investor perspective:\n1. Opportunity clarity (what's the big idea?)\n2. Market size clarity (how big can this get?)\n3. Competitive advantage clarity (why will they win?)\n4. Risk clarity (what could go wrong?)\n5. Return thesis clarity (how do we make money?)\n\nGenerate:\n- Investment Memo Clarity Score (0-100)\n- Decision-making gaps\n- Risk communication assessment\n- Recommendations for stronger memo\n\nKey question: Can a partner pitch this to the investment committee clearly?\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Company name"
+        },
+        {
+          "name": "memo_content",
+          "label": "Investment Memo Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste investment memo content"
+        },
+        {
+          "name": "investment_stage",
+          "label": "Investment Stage",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B",
+            "Series C+",
+            "Growth"
+          ]
+        },
+        {
+          "name": "check_size",
+          "label": "Investment Amount",
+          "type": "text",
+          "required": false,
+          "placeholder": "e.g., $500K, $2M"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564552",
+      "updatedAt": "2025-12-18T15:45:49.564553"
+    },
+    {
+      "id": "rebrand_clarity_check",
+      "name": "Rebrand Clarity Check",
+      "description": "Analyze rebrand messaging for market transition clarity",
+      "category": "clarity",
+      "tags": [
+        "rebrand",
+        "transition",
+        "messaging",
+        "brand"
+      ],
+      "template": "Analyze rebrand messaging for [company_name].\n\nOld positioning: [old_positioning]\nNew positioning: [new_positioning]\nTransition messaging: [transition_messaging]\n\nTarget audiences:\n- Existing customers: [existing_customers]\n- New prospects: [new_prospects]\n\nEvaluate:\n1. Change rationale clarity (why rebrand?)\n2. Continuity clarity (what stays the same?)\n3. New value prop clarity (what's different?)\n4. Customer impact clarity (how does this affect me?)\n5. Transition plan clarity (when/how does this happen?)\n\nGenerate:\n- Rebrand Clarity Score (0-100)\n- Confusion risks by audience\n- Customer anxiety points\n- Recommendations for smoother transition\n\nCritical questions:\n- Will existing customers understand and stay?\n- Will new prospects understand the new positioning?\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Company name"
+        },
+        {
+          "name": "old_positioning",
+          "label": "Old Positioning",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe current/old positioning"
+        },
+        {
+          "name": "new_positioning",
+          "label": "New Positioning",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe new positioning"
+        },
+        {
+          "name": "transition_messaging",
+          "label": "Transition Messaging",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "How are you explaining the change?"
+        },
+        {
+          "name": "existing_customers",
+          "label": "Existing Customer Base",
+          "type": "text",
+          "required": false,
+          "placeholder": "Describe existing customer base"
+        },
+        {
+          "name": "new_prospects",
+          "label": "Target Prospects",
+          "type": "text",
+          "required": false,
+          "placeholder": "Describe target new prospects"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564554",
+      "updatedAt": "2025-12-18T15:45:49.564555"
+    },
+    {
+      "id": "authority_content_analysis",
+      "name": "Authority Content Analysis",
+      "description": "Analyze thought leadership content for expertise clarity and memorability",
+      "category": "clarity",
+      "tags": [
+        "thought leadership",
+        "content",
+        "authority",
+        "expertise"
+      ],
+      "template": "Analyze thought leadership content for [author_name].\n\nContent title: [content_title]\nContent: [content_body]\nTarget audience: [target_audience]\nGoal: [content_goal]\n\nEvaluate:\n1. Unique insight clarity (what's new here?)\n2. Expertise demonstration (why trust this person?)\n3. Argument clarity (what's the main point?)\n4. Actionability (what should I do with this?)\n5. Memorability (what will I remember tomorrow?)\n\nGenerate:\n- Thought Leadership Score (0-100)\n- Differentiation from generic content\n- Authority signal strength\n- Recommendations for stronger positioning\n\nKey questions:\n- Does this establish genuine expertise or just repeat common knowledge?\n- What one insight will readers remember and share?\n",
+      "variables": [
+        {
+          "name": "author_name",
+          "label": "Author Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Author name"
+        },
+        {
+          "name": "content_title",
+          "label": "Content Title",
+          "type": "text",
+          "required": true,
+          "placeholder": "Title of the content"
+        },
+        {
+          "name": "content_body",
+          "label": "Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste the content"
+        },
+        {
+          "name": "target_audience",
+          "label": "Target Audience",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who is this for?"
+        },
+        {
+          "name": "content_goal",
+          "label": "Content Goal",
+          "type": "text",
+          "required": true,
+          "placeholder": "What should this achieve?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564556",
+      "updatedAt": "2025-12-18T15:45:49.564556"
+    },
+    {
+      "id": "api_reference_clarity",
+      "name": "API Reference Clarity Audit",
+      "description": "Analyze API documentation for developer usability and comprehension",
+      "category": "clarity",
+      "tags": [
+        "api",
+        "documentation",
+        "developer",
+        "reference"
+      ],
+      "template": "Analyze API documentation for [api_name].\n\nDocumentation: [doc_content]\nAPI type: [api_type]\nTarget developer: [developer_level]\n\nEvaluate:\n1. Authentication clarity (how do I get access?)\n2. Endpoint purpose clarity (what does each endpoint do?)\n3. Request/response clarity (what do I send/receive?)\n4. Error handling clarity (what went wrong? how to fix?)\n5. Example quality (can I copy-paste to get started?)\n\nGenerate:\n- API Documentation Score (0-100)\n- Integration friction points\n- Missing clarification\n- Time-to-first-successful-call optimization\n\nCritical metric: Can a developer make their first successful API call in under 10 minutes?\n",
+      "variables": [
+        {
+          "name": "api_name",
+          "label": "API Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "API name"
+        },
+        {
+          "name": "doc_content",
+          "label": "Documentation Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Documentation content or URL"
+        },
+        {
+          "name": "api_type",
+          "label": "API Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "REST",
+            "GraphQL",
+            "WebSocket",
+            "gRPC",
+            "Other"
+          ]
+        },
+        {
+          "name": "developer_level",
+          "label": "Target Developer Level",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Beginner",
+            "Intermediate",
+            "Advanced"
+          ]
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564557",
+      "updatedAt": "2025-12-18T15:45:49.564558"
+    },
+    {
+      "id": "partnership_program_analysis",
+      "name": "Partnership Program Analysis",
+      "description": "Analyze partner program for clarity and appeal",
+      "category": "clarity",
+      "tags": [
+        "partner",
+        "channel",
+        "program",
+        "clarity"
+      ],
+      "template": "Analyze partner program for [company_name].\n\nProgram description: [program_description]\nPartner benefits: [benefits]\nRequirements: [requirements]\n\nTarget partner profile: [target_partner]\n\nEvaluate from potential partner perspective:\n1. Value proposition clarity (what's in it for me?)\n2. Requirement clarity (what do I need to qualify?)\n3. Benefit clarity (what exactly do I get?)\n4. Process clarity (how do I join and succeed?)\n5. Support clarity (what help will I receive?)\n\nGenerate:\n- Partner Program Clarity Score (0-100)\n- Enrollment barriers\n- Value communication gaps\n- Recommendations to attract quality partners\n\nKey question: Can a qualified partner decide to join in one conversation?\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Company name"
+        },
+        {
+          "name": "program_description",
+          "label": "Program Description",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe the partner program"
+        },
+        {
+          "name": "benefits",
+          "label": "Partner Benefits",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "What partners get"
+        },
+        {
+          "name": "requirements",
+          "label": "Partner Requirements",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "What's required to be a partner"
+        },
+        {
+          "name": "target_partner",
+          "label": "Target Partner Profile",
+          "type": "text",
+          "required": true,
+          "placeholder": "Describe ideal partner"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564559",
+      "updatedAt": "2025-12-18T15:45:49.564560"
+    },
+    {
+      "id": "crisis_message_analysis",
+      "name": "Crisis Message Analysis",
+      "description": "Analyze crisis communication for clarity and trust preservation",
+      "category": "clarity",
+      "tags": [
+        "crisis",
+        "pr",
+        "communication",
+        "trust"
+      ],
+      "template": "Analyze crisis communication for [company_name].\n\nCrisis situation: [crisis_description]\nCommunication: [crisis_message]\nAudience: [primary_audience]\n\nEvaluate:\n1. Situation clarity (what happened?)\n2. Responsibility clarity (who's accountable?)\n3. Impact clarity (how does this affect me?)\n4. Resolution clarity (what are you doing about it?)\n5. Timeline clarity (when will this be resolved?)\n\nGenerate:\n- Crisis Communication Score (0-100)\n- Trust preservation assessment\n- Clarity gaps causing anxiety\n- Recommendations for stronger response\n\nCritical question: Does this message reduce anxiety and build trust, or create more confusion?\n",
+      "variables": [
+        {
+          "name": "company_name",
+          "label": "Company Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Company name"
+        },
+        {
+          "name": "crisis_description",
+          "label": "Crisis Situation",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe the crisis situation"
+        },
+        {
+          "name": "crisis_message",
+          "label": "Crisis Communication",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Your crisis communication message"
+        },
+        {
+          "name": "primary_audience",
+          "label": "Primary Audience",
+          "type": "text",
+          "required": true,
+          "placeholder": "Who needs to hear this?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564561",
+      "updatedAt": "2025-12-18T15:45:49.564561"
+    },
+    {
+      "id": "feature_launch_message",
+      "name": "Product Feature Launch Message",
+      "description": "Analyze feature announcement for user comprehension and adoption",
+      "category": "clarity",
+      "tags": [
+        "feature",
+        "launch",
+        "announcement",
+        "adoption"
+      ],
+      "template": "Analyze feature announcement for [feature_name].\n\nAnnouncement: [announcement_content]\nFeature type: [feature_type]\nTarget users: [target_users]\n\nEvaluate from user perspective:\n1. Feature purpose clarity (what does it do?)\n2. Benefit clarity (why should I care?)\n3. Availability clarity (when/how can I use it?)\n4. Usage clarity (how do I get started?)\n5. Change impact clarity (what changes for me?)\n\nGenerate:\n- Feature Announcement Score (0-100)\n- Adoption barriers\n- Confusion risks\n- Recommendations to drive activation\n\nKey questions:\n- Do users understand the value in 30 seconds?\n- Will they know how to start using it?\n",
+      "variables": [
+        {
+          "name": "feature_name",
+          "label": "Feature Name",
+          "type": "text",
+          "required": true,
+          "placeholder": "Feature name"
+        },
+        {
+          "name": "announcement_content",
+          "label": "Announcement Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste the announcement message"
+        },
+        {
+          "name": "feature_type",
+          "label": "Feature Type",
+          "type": "select",
+          "required": true,
+          "options": [
+            "New feature",
+            "Improvement",
+            "Beta",
+            "Deprecation",
+            "Integration"
+          ]
+        },
+        {
+          "name": "target_users",
+          "label": "Target Users",
+          "type": "text",
+          "required": true,
+          "placeholder": "Which users is this for?"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564562",
+      "updatedAt": "2025-12-18T15:45:49.564563"
+    },
+    {
+      "id": "roast_my_content",
+      "name": "Roast My Content",
+      "description": "Brutally funny but accurate content roast using HAPE + Big Five analysis",
+      "category": "communications",
+      "tags": [
+        "roast",
+        "humor",
+        "hape",
+        "big-five",
+        "viral"
+      ],
+      "template": "Roast this content using HAPE + Big Five analysis. Be brutally funny but accurate.\n\n**THE ROAST**:\n\nChannel your inner comedy writer who ALSO has a psychology PhD. Point out:\n\n1. **PERSONALITY FAIL**: \"Congratulations, you've written content that appeals exclusively to [obscure personality combo]. That's approximately 3 people, and two of them are your parents.\"\n\n2. **HAPE DISASTER**: Which psychological systems are you accidentally triggering in the WRONG direction? (e.g., \"Your 'authenticity' reads like a LinkedIn influencer ate a thesaurus\")\n\n3. **THE CRINGE MOMENT**: Quote the single worst line and explain why it makes people's souls leave their bodies\n\n4. **WHO YOU LOST**: \"At paragraph 2, every High C person closed the tab to reorganize their desk instead\"\n\n5. **THE INTERVENTION**: What would a communications therapist say about your content choices?\n\n**ROAST SEVERITY**: \ud83c\udf36\ufe0f\ud83c\udf36\ufe0f\ud83c\udf36\ufe0f (3 peppers = brutal but fair)\n\n**THE BACKHANDED COMPLIMENT**: One genuinely good thing, delivered sarcastically\n\n**THE SAVE**: After the roast, give ONE actionable fix that would actually help\n\nRemember: The best roasts contain truth. Make it hurt AND make it useful.\n\n---\n\nCONTENT TO ROAST:\n[content_to_roast]\n",
+      "variables": [
+        {
+          "name": "content_to_roast",
+          "label": "Content to Roast",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your content here and prepare for brutal honesty...",
+          "helpText": "Any content - email, post, pitch, website copy, etc."
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564564",
+      "updatedAt": "2025-12-18T15:45:49.564565"
+    },
+    {
+      "id": "combo_analyzer",
+      "name": "Combo Analyzer",
+      "description": "Comprehensive HAPE + Big Five content analysis with actionable fixes",
+      "category": "communications",
+      "tags": [
+        "hape",
+        "big-five",
+        "analysis",
+        "comprehensive",
+        "scores"
+      ],
+      "template": "Analyze this content using the Communications Optimization System (HAPE + Big Five frameworks).\n\nProvide:\n\n1. **HAPE SCORE** (0-100): Rate High-Arousal Positive Engagement across 8 psychological systems:\n   - Identity (does it resonate with who they are?)\n   - Social (does it leverage social dynamics?)\n   - Justice (does it activate fairness instincts?)\n   - Validation (does it make them feel seen/understood?)\n   - Curiosity (does it spark genuine interest?)\n   - Efficacy (does it empower action?)\n   - Authenticity (does it feel genuine?)\n   - Coherence (does it make logical sense?)\n\n2. **BIG FIVE REACH**: Which personality profiles (OCEAN 0.0-1.0 scale) does this content attract vs. repel?\n   - O (Openness): Who likes this? Who bounces?\n   - C (Conscientiousness): Structure appeal?\n   - E (Extraversion): Energy level match?\n   - A (Agreeableness): Warmth calibration?\n   - N (Neuroticism): Anxiety triggers?\n\n3. **CLARITY SCAN**: Is the core message instantly understandable? Any jargon or confusion?\n\n4. **TOP 3 FIXES**: Specific, actionable improvements ranked by impact\n\n5. **REWRITE** (optional): Show one improved version if changes would significantly boost engagement\n\nBe direct. Skip fluff.\n\n---\n\nCONTENT TO ANALYZE:\n[content_to_analyze]\n\n[additional_context]\n",
+      "variables": [
+        {
+          "name": "content_to_analyze",
+          "label": "Content to Analyze",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your content here...",
+          "helpText": "Any content - email, post, pitch, presentation, website copy"
+        },
+        {
+          "name": "additional_context",
+          "label": "Additional Context",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "Target audience, goals, platform, etc.",
+          "helpText": "Optional context to improve analysis"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564566",
+      "updatedAt": "2025-12-18T15:45:49.564567"
+    },
+    {
+      "id": "will_text_land",
+      "name": "Will This Text Land?",
+      "description": "Analyze if your message will land the way you want with a specific person",
+      "category": "communications",
+      "tags": [
+        "text",
+        "message",
+        "personality",
+        "relationship",
+        "interpersonal"
+      ],
+      "template": "Analyze this message I'm about to send to a specific person. Will it land the way I want?\n\n**WHO AM I TEXTING?**\n[person_description]\n\n**PERSONALITY PROFILE ESTIMATE**:\nBased on the description, estimate their Big Five:\n- O (Openness): ___ (0.0-1.0)\n- C (Conscientiousness): ___\n- E (Extraversion): ___\n- A (Agreeableness): ___\n- N (Neuroticism): ___\n\n**MESSAGE ANALYSIS**:\n\n1. **TONE MATCH/MISMATCH**:\n   - Your message tone: ___\n   - Their preferred receiving tone: ___\n   - Match? \u2705 or \ud83d\udea8\n\n2. **TRIGGER CHECK**:\n   - Any words/phrases that might hit THEIR specific triggers?\n   - (e.g., \"we need to talk\" \u2192 High N panic attack)\n\n3. **SUBTEXT DECODER**:\n   - What you THINK you're saying:\n   - What THEY might read into it:\n\n4. **WORST CASE SCENARIO**:\n   - How could this message be misinterpreted by their personality type?\n\n5. **SEND / REVISE / ABORT**:\n   - \ud83d\udfe2 SEND: Good to go\n   - \ud83d\udfe1 REVISE: Small tweaks needed (suggest them)\n   - \ud83d\udd34 ABORT: Do not send this, here's why\n\n**OPTIMIZED REWRITE**:\nSame message, tuned for their specific personality profile.\n\n---\n\nTHE MESSAGE I WANT TO SEND:\n[message_to_send]\n",
+      "variables": [
+        {
+          "name": "person_description",
+          "label": "Who Are You Texting?",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Describe them briefly - relationship, personality, current mood if known.\nExample: \"My High-N, High-A mom who worries about everything\"\nOr: \"My Low-A, High-C boss who hates fluff\"\n",
+          "helpText": "The more context, the better the analysis"
+        },
+        {
+          "name": "message_to_send",
+          "label": "Your Message",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste the message you're about to send...",
+          "helpText": "The exact text you plan to send"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564568",
+      "updatedAt": "2025-12-18T15:45:49.564568"
+    },
+    {
+      "id": "investor_analyzer",
+      "name": "Investor-Focused Analyzer",
+      "description": "Analyze content for investor audience using Big Five investor psychology",
+      "category": "communications",
+      "tags": [
+        "investor",
+        "pitch",
+        "fundraising",
+        "startup",
+        "vc"
+      ],
+      "template": "Analyze this content for an INVESTOR audience using the Communications Optimization System.\n\n**INVESTOR PERSONALITY PROFILE** (typical VC/angel):\n- High C (0.7-0.9): Wants structure, metrics, clear milestones\n- Low A (0.3-0.5): Skeptical, not swayed by warm fuzzy feelings\n- High O (0.6-0.8): Open to novel ideas but needs validation\n- Low N (0.2-0.4): Not moved by fear tactics, wants confidence\n\n**DOES THIS CONTENT DELIVER?**\n\n1. **TRACTION SIGNALS**: Evidence of progress, not just vision?\n   - Metrics, milestones, growth indicators?\n   - Score: ___/10\n\n2. **MARKET CLARITY**: Clear problem \u2192 solution \u2192 market size?\n   - TAM/SAM/SOM logic present?\n   - Score: ___/10\n\n3. **CREDIBILITY MARKERS**: Why should THEY win?\n   - Team, unfair advantage, defensibility?\n   - Score: ___/10\n\n4. **RISK ACKNOWLEDGMENT**: Honest about challenges?\n   - Investors respect founders who see risks clearly\n   - Score: ___/10\n\n5. **ASK CLARITY**: What do you want and why now?\n   - Clear, specific, justified?\n   - Score: ___/10\n\n**RED FLAGS FOR INVESTORS**:\n- List anything that would make a skeptical investor tune out\n\n**INVESTOR-READY SCORE**: ___/100\n\n**TOP 3 FIXES** to make this investor-credible:\n1.\n2.\n3.\n\n---\n\nCONTENT TO ANALYZE:\n[investor_content]\n\nInvestment stage: [investment_stage]\n",
+      "variables": [
+        {
+          "name": "investor_content",
+          "label": "Content to Analyze",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your pitch deck content, email to investor, or any investor-facing content...",
+          "helpText": "Pitch deck, investor email, one-pager, etc."
+        },
+        {
+          "name": "investment_stage",
+          "label": "Investment Stage",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Pre-seed",
+            "Seed",
+            "Series A",
+            "Series B+",
+            "Strategic/Corporate"
+          ]
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564569",
+      "updatedAt": "2025-12-18T15:45:49.564570"
+    },
+    {
+      "id": "prompt_quality_analyzer",
+      "name": "Prompt Engineering Analyzer",
+      "description": "Score your prompts across 5 quality dimensions with specific improvements",
+      "category": "communications",
+      "tags": [
+        "prompt",
+        "engineering",
+        "ai",
+        "developer",
+        "quality"
+      ],
+      "template": "Analyze this prompt across 5 dimensions using communications optimization frameworks:\n\n1. **CLARITY** (Big Five Conscientiousness-aligned structure)\n   - Is the objective clear? Is there logical structure?\n   - Score: ___/100\n\n2. **SPECIFICITY** (Information density vs. noise ratio)\n   - Are requirements concrete? Examples provided?\n   - Score: ___/100\n\n3. **CONTEXT RICHNESS** (HAPE engagement system activation)\n   - Does the LLM have enough context to succeed?\n   - Score: ___/100\n\n4. **PERSONALITY ADAPTATION** (Big Five trait accessibility)\n   - Does this prompt work across different thinking styles?\n   - Score: ___/100\n\n5. **ETHICAL FRAMING** (Vulnerability protection, manipulation prevention)\n   - Any manipulation tactics? Autonomy preserved?\n   - Score: ___/100\n\n**COMPOSITE SCORE**: Average across dimensions\n\n**TOP ISSUES IDENTIFIED**:\n- [Specific problems with the prompt]\n\n**IMPROVED VERSION**:\n[Rewrite the prompt with fixes applied]\n\n---\n\nPROMPT TO ANALYZE:\n[prompt_to_analyze]\n",
+      "variables": [
+        {
+          "name": "prompt_to_analyze",
+          "label": "Prompt to Analyze",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste any prompt you've written for an LLM...",
+          "helpText": "Any prompt for GPT, Claude, or other LLMs"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564571",
+      "updatedAt": "2025-12-18T15:45:49.564572"
+    },
+    {
+      "id": "meeting_analyzer",
+      "name": "Meeting Communication Analyzer",
+      "description": "Analyze meeting dynamics and identify personality-based communication friction",
+      "category": "communications",
+      "tags": [
+        "meeting",
+        "team",
+        "dynamics",
+        "personality",
+        "business"
+      ],
+      "template": "Analyze this meeting communication for personality conflicts and optimization opportunities.\n\n**MEETING CONTEXT**:\n[meeting_context]\n\n**ANALYSIS**:\n\n1. **PERSONALITY COLLISION POINTS**:\n   - Which Big Five traits are clashing?\n   - Who's talking past whom?\n\n2. **COMMUNICATION STYLE MISMATCHES**:\n   - High C vs Low C structure preferences\n   - High E vs Low E participation imbalances\n   - High A vs Low A conflict handling\n\n3. **HIDDEN TENSIONS**:\n   - What's being said between the lines?\n   - Who's disengaging and why?\n\n4. **ENGAGEMENT SCORE** (0-100):\n   - How well is this meeting leveraging HAPE systems?\n   - Which psychological needs are unmet?\n\n5. **MEETING EFFECTIVENESS SCORE**: ___/100\n\n**TOP 3 DYNAMICS ISSUES**:\n1.\n2.\n3.\n\n**OPTIMIZATION RECOMMENDATIONS**:\n- [Specific changes to improve meeting effectiveness]\n\n---\n\nMEETING TRANSCRIPT/NOTES:\n[meeting_content]\n",
+      "variables": [
+        {
+          "name": "meeting_context",
+          "label": "Meeting Context",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "What kind of meeting? Who's there? What's the goal?\nExample: \"Weekly standup with 5 engineers, product manager leading\"\n",
+          "helpText": "Background on the meeting situation"
+        },
+        {
+          "name": "meeting_content",
+          "label": "Meeting Transcript or Notes",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste meeting notes, transcript, or describe what happened...",
+          "helpText": "The more detail, the better the analysis"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564573",
+      "updatedAt": "2025-12-18T15:45:49.564573"
+    },
+    {
+      "id": "sales_pitch_optimizer",
+      "name": "Sales Pitch Optimizer",
+      "description": "Score persuasion alignment with buyer psychology and Big Five profiles",
+      "category": "communications",
+      "tags": [
+        "sales",
+        "pitch",
+        "persuasion",
+        "buyer",
+        "psychology"
+      ],
+      "template": "Analyze this sales pitch for psychological alignment with the target buyer.\n\n**TARGET BUYER PROFILE**:\n[buyer_description]\n\n**PITCH ANALYSIS**:\n\n1. **BUYER PERSONALITY MATCH**:\n   - Estimated buyer Big Five profile:\n   - How well does pitch match their preferences?\n   - Match Score: ___/100\n\n2. **HAPE ACTIVATION**:\n   - Identity: Does this connect to who they are?\n   - Efficacy: Does this empower them to act?\n   - Validation: Do they feel understood?\n   - Curiosity: Is there genuine interest sparked?\n   - HAPE Score: ___/100\n\n3. **OBJECTION ANTICIPATION**:\n   - What objections will this buyer have based on their profile?\n   - Are they addressed?\n\n4. **CALL-TO-ACTION ALIGNMENT**:\n   - Does the CTA match their decision-making style?\n   - High C buyers: Need process clarity\n   - Low A buyers: Need proof, not promises\n   - CTA Score: ___/100\n\n5. **TRUST SIGNALS**:\n   - Credibility markers present?\n   - Social proof calibrated to buyer type?\n   - Trust Score: ___/100\n\n**OVERALL PITCH EFFECTIVENESS**: ___/100\n\n**TOP 3 PSYCHOLOGICAL ADJUSTMENTS**:\n1.\n2.\n3.\n\n**OPTIMIZED PITCH REWRITE**:\n[Tailored version for this buyer type]\n\n---\n\nSALES PITCH:\n[sales_pitch]\n",
+      "variables": [
+        {
+          "name": "buyer_description",
+          "label": "Target Buyer Profile",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Who are you pitching to? What do you know about them?\nExample: \"CFO at mid-size company, data-driven, skeptical of vendors, values efficiency\"\n",
+          "helpText": "Describe your buyer's personality and priorities"
+        },
+        {
+          "name": "sales_pitch",
+          "label": "Your Sales Pitch",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your pitch, email, or presentation content...",
+          "helpText": "The sales content you want optimized"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564574",
+      "updatedAt": "2025-12-18T15:45:49.564575"
+    },
+    {
+      "id": "viral_predictor",
+      "name": "Social Media Viral Predictor",
+      "description": "Predict viral potential using personality psychology and engagement science",
+      "category": "communications",
+      "tags": [
+        "social",
+        "viral",
+        "engagement",
+        "content",
+        "psychology"
+      ],
+      "template": "Analyze this social media content for viral potential using HAPE + Big Five frameworks.\n\n**VIRAL POTENTIAL ANALYSIS**:\n\n1. **SHAREABILITY SCORE** (0-100):\n   - Does this make people want to share? Why?\n   - Identity signal: \"This says something about ME if I share it\"\n   - Social currency: \"I look good/smart/funny sharing this\"\n\n2. **EMOTIONAL ACTIVATION** (0-100):\n   - Which emotions does this trigger?\n   - High-arousal positive emotions (awe, excitement, humor)?\n   - High-arousal negative emotions (anger, anxiety)?\n   - Emotional Intensity Score:\n\n3. **PERSONALITY REACH**:\n   - Which Big Five profiles will engage?\n   - High O: Novel, creative, thought-provoking?\n   - High E: Social, exciting, share-worthy?\n   - High A: Warm, uplifting, community-building?\n   - Low N: Confident, not anxiety-inducing?\n\n4. **PLATFORM FIT**: [platform]\n   - Does format match platform norms?\n   - Optimal length? Visual requirements?\n   - Platform Fit Score: ___/100\n\n5. **HOOK STRENGTH** (First 3 seconds):\n   - Pattern interrupt present?\n   - Curiosity gap created?\n   - Hook Score: ___/100\n\n**VIRAL PROBABILITY**: ___% (estimated reach multiplier)\n\n**TOP 3 VIRAL BOOSTERS**:\n1.\n2.\n3.\n\n**OPTIMIZED VERSION**:\n[Higher-potential rewrite]\n\n---\n\nCONTENT TO ANALYZE:\n[social_content]\n",
+      "variables": [
+        {
+          "name": "social_content",
+          "label": "Social Media Content",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your post, tweet, video script, or content idea...",
+          "helpText": "Any social media content or concept"
+        },
+        {
+          "name": "platform",
+          "label": "Target Platform",
+          "type": "select",
+          "required": true,
+          "options": [
+            "Twitter/X",
+            "LinkedIn",
+            "Instagram",
+            "TikTok",
+            "YouTube",
+            "Facebook",
+            "Other"
+          ]
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564576",
+      "updatedAt": "2025-12-18T15:45:49.564577"
+    },
+    {
+      "id": "holiday_card_decoder",
+      "name": "Holiday Card Personality Decoder",
+      "description": "What your holiday message reveals about you (fun + psychological insight)",
+      "category": "communications",
+      "tags": [
+        "holiday",
+        "personality",
+        "fun",
+        "analysis",
+        "seasonal"
+      ],
+      "template": "Analyze what this holiday message reveals about the sender's personality and communication style.\n\n**PERSONALITY PROFILE DETECTION**:\n\nBased on this holiday message, the sender appears to be:\n\n1. **BIG FIVE PROFILE**:\n   - Openness: ___ (0.0-1.0) - [Evidence from message]\n   - Conscientiousness: ___ - [Evidence]\n   - Extraversion: ___ - [Evidence]\n   - Agreeableness: ___ - [Evidence]\n   - Neuroticism: ___ - [Evidence]\n\n2. **COMMUNICATION STYLE**:\n   - Formal vs. Casual: ___\n   - Warm vs. Professional: ___\n   - Generic vs. Personal: ___\n\n3. **WHAT THIS MESSAGE REVEALS**:\n   - The sender values: ___\n   - The sender is probably: ___\n   - Their relationship style tends to be: ___\n\n4. **THE UNINTENTIONAL MESSAGE**:\n   - What they're accidentally saying: ___\n   - What recipients might think: ___\n\n5. **PERSONALITY MATCH SCORE**:\n   - If sender wanted to seem [warm/professional/fun], did they succeed?\n   - Alignment Score: ___/100\n\n**FUN INSIGHTS**:\n- \"You're the type of person who...\" [playful observation]\n- \"In a holiday party, you're probably...\" [behavioral prediction]\n- \"Your ideal gift to receive is...\" [personality-based guess]\n\n**OPTIMIZED VERSION** (if they want to come across differently):\n[Rewrite that better matches intended impression]\n\n---\n\nHOLIDAY MESSAGE TO ANALYZE:\n[holiday_message]\n",
+      "variables": [
+        {
+          "name": "holiday_message",
+          "label": "Holiday Message",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste a holiday card message, email, or text...\n\"Wishing you and your family a wonderful holiday season...\"\n",
+          "helpText": "Any holiday greeting or message"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564578",
+      "updatedAt": "2025-12-18T15:45:49.564578"
+    },
+    {
+      "id": "dating_profile_optimizer",
+      "name": "Dating Profile Optimizer",
+      "description": "Optimize your dating profile using personality psychology for authentic attraction",
+      "category": "communications",
+      "tags": [
+        "dating",
+        "profile",
+        "personality",
+        "attraction",
+        "psychology"
+      ],
+      "template": "Analyze and optimize this dating profile using personality psychology for authentic attraction.\n\n**PROFILE ANALYSIS**:\n\n1. **PERSONALITY PROJECTION**:\n   - What Big Five profile does this project?\n   - O: ___ C: ___ E: ___ A: ___ N: ___\n   - Is this authentic or performative?\n\n2. **ATTRACTION SIGNALS**:\n   - Which positive traits are communicated?\n   - Which might be misread or undersold?\n   - What's missing that should be there?\n\n3. **COMPATIBILITY SIGNALS**:\n   - What type of person would this attract?\n   - Any unintentional filters (repelling good matches)?\n\n4. **AUTHENTICITY SCORE** (0-100):\n   - Does this sound like a real person?\n   - Or like everyone else on the app?\n\n5. **CONVERSATION STARTERS**:\n   - Does this give matches something to ask about?\n   - Hook Quality Score: ___/100\n\n6. **RED FLAG CHECK**:\n   - Anything that might seem off-putting?\n   - Unintentional signals?\n\n**OVERALL PROFILE SCORE**: ___/100\n\n**TOP 3 IMPROVEMENTS**:\n1.\n2.\n3.\n\n**OPTIMIZED PROFILE**:\n[Better version that's still authentically you]\n\n---\n\nDATING PROFILE:\n[dating_profile]\n\nWhat you're looking for: [looking_for]\n",
+      "variables": [
+        {
+          "name": "dating_profile",
+          "label": "Your Dating Profile",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Paste your dating profile bio/text...",
+          "helpText": "Your current profile text from any dating app"
+        },
+        {
+          "name": "looking_for",
+          "label": "What You're Looking For",
+          "type": "textarea",
+          "required": false,
+          "placeholder": "What kind of person/relationship are you seeking?",
+          "helpText": "Helps tailor the optimization"
+        }
+      ],
+      "isCustom": true,
+      "createdAt": "2025-12-18T15:45:49.564579",
+      "updatedAt": "2025-12-18T15:45:49.564580"
+    }
+  ]
+}
