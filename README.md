@@ -1,6 +1,24 @@
 # Prompt Engineering Workbench | Claude Projects
 
-A universal web-based chat interface for ANY Claude Project. Supports both the official Anthropic API and direct Claude.ai web access with cookie authentication.
+A powerful workbench for testing and refining Claude-powered workflows, agents, and prompts.
+
+## Why This Tool?
+
+**Claude Projects** lets you create custom AI assistants with specific instructions and knowledge bases. But testing those workflows requires switching between the Claude.ai interface, copying prompts, and manually iterating.
+
+**This workbench solves that** by giving you:
+
+- **Direct access to your Claude Projects** - Test your agents with their full knowledge bases
+- **Reusable prompt templates** - Build, save, and iterate on prompts with variables
+- **Tool execution** - Claude can fetch web pages and search the web during analysis
+- **Progress visibility** - See what Claude is doing in real-time
+
+### Use Cases
+
+| Mode | Best For |
+|------|----------|
+| **Projects** | Testing customer-facing agents, workflows with knowledge bases, complex multi-step prompts |
+| **API** | Simple prompt templating, quick iterations, no knowledge base needed |
 
 ## Features
 
@@ -33,23 +51,27 @@ A universal web-based chat interface for ANY Claude Project. Supports both the o
 
 ## Connection Modes
 
-### Option 1: Claude.ai Web Client (Recommended for Projects)
+### Projects Mode (Recommended for Agent Testing)
 
-Connect directly to Claude.ai using your browser session cookie. This gives you access to:
-- Your Claude Projects with their custom instructions and knowledge bases
-- Project-specific conversations
-- Project selector to switch between projects
-- All features available in the Claude.ai web interface
+Connect directly to Claude.ai using your browser session cookie. **This is the primary use case** for testing customer workflows and agents.
+
+**Why use Projects mode:**
+- Test agents with their full knowledge bases and custom instructions
+- Validate complex workflows before deploying
+- Iterate on project configurations with real feedback
+- Access project-specific conversations and context
 
 **Header displays:** `Prompt Engineering Workbench | Claude Projects`
 
-### Option 2: Official Anthropic API
+### API Mode (Simple Prompt Templating)
 
-Use the standard Anthropic API for direct Claude access. This mode:
-- Works as a template-based prompt engine
-- Does NOT have access to Claude Projects or knowledge bases
-- Hides the project selector (not applicable)
-- Uses your API key directly with Anthropic
+Use the standard Anthropic API for direct Claude access. Best for users who just need prompt templating without project features.
+
+**Why use API mode:**
+- Simple prompt engineering and iteration
+- No knowledge base or custom instructions needed
+- Direct API access for testing raw prompts
+- Lower friction for quick experiments
 
 **Header displays:** `Prompt Engineering Workbench | Claude AI`
 
