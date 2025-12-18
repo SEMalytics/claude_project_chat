@@ -56,7 +56,13 @@ class ChatInterface {
             // Shared elements
             chatHistory: document.getElementById('chatHistory'),
             emptyState: document.getElementById('emptyState'),
-            loadingIndicator: document.getElementById('loadingIndicator')
+            loadingIndicator: document.getElementById('loadingIndicator'),
+
+            // Quick input elements
+            quickInputSection: document.getElementById('quickInputSection'),
+            quickInputForm: document.getElementById('quickInputForm'),
+            quickInput: document.getElementById('quickInput'),
+            quickSendBtn: document.getElementById('quickSendBtn')
         };
     }
 
@@ -201,6 +207,97 @@ class ChatInterface {
             this.elements.templateDropZone.addEventListener('dragover', (e) => this.handleDragOver(e, this.elements.templateDropZone));
             this.elements.templateDropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e, this.elements.templateDropZone));
             this.elements.templateDropZone.addEventListener('drop', (e) => this.handleDrop(e, 'template'));
+        }
+
+        // Quick input form
+        if (this.elements.quickInputForm) {
+            this.elements.quickInputForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.sendQuickMessage();
+            });
+        }
+
+        // Quick input Enter key
+        if (this.elements.quickInput) {
+            this.elements.quickInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendQuickMessage();
+                }
+            });
+        }
+    }
+
+    /**
+     * Show the quick input section
+     */
+    showQuickInput() {
+        if (this.elements.quickInputSection) {
+            this.elements.quickInputSection.classList.remove('hidden');
+        }
+    }
+
+    /**
+     * Hide the quick input section
+     */
+    hideQuickInput() {
+        if (this.elements.quickInputSection) {
+            this.elements.quickInputSection.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Send a quick follow-up message
+     */
+    async sendQuickMessage() {
+        const message = this.elements.quickInput?.value?.trim();
+        if (!message || this.isLoading) return;
+
+        // Add user message to chat
+        this.addMessage('user', message);
+
+        // Clear input
+        this.elements.quickInput.value = '';
+
+        // Hide empty state
+        this.elements.emptyState?.classList.add('hidden');
+
+        this.setLoading(true);
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    session_id: this.sessionId,
+                    files: []
+                })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to get response');
+            }
+
+            // Show tool stats if available
+            if (data.tool_stats) {
+                this.showToolStats(data.tool_stats);
+            }
+
+            // Add assistant response to chat
+            this.addMessage('assistant', data.response, [], null, data.tool_stats);
+
+        } catch (error) {
+            this.showError(`Error: ${error.message}`);
+            // Remove the user message if request failed
+            const lastMessage = this.elements.chatHistory.lastElementChild;
+            if (lastMessage && lastMessage.classList.contains('user-message')) {
+                lastMessage.remove();
+            }
+        } finally {
+            this.setLoading(false);
         }
     }
 
@@ -428,6 +525,9 @@ class ChatInterface {
             if (this.promptBuilder) {
                 this.promptBuilder.clearForm();
             }
+
+            // Show quick input for follow-ups
+            this.showQuickInput();
 
         } catch (error) {
             this.showError(`Error: ${error.message}`);
@@ -742,6 +842,9 @@ class ChatInterface {
                 if (this.promptBuilder) {
                     this.promptBuilder.clearForm();
                 }
+
+                // Hide quick input (template not submitted yet)
+                this.hideQuickInput();
 
                 // Show success notification
                 this.showNotification('New chat started', 'success');

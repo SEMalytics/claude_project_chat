@@ -219,6 +219,25 @@
                     <div id="progressBar" class="h-full bg-blue-600 transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
+
+            <!-- Quick Input (visible when template section is collapsed) -->
+            <div id="quickInputSection" class="hidden border-t border-gray-200 p-3 bg-gray-50">
+                <form id="quickInputForm" class="flex gap-2">
+                    <input type="text"
+                           id="quickInput"
+                           placeholder="Send a follow-up message..."
+                           class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                           autocomplete="off">
+                    <button type="submit"
+                            id="quickSendBtn"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center gap-2">
+                        <span>Send</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
         </div>
 
         <!-- Footer -->
