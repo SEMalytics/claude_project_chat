@@ -6,6 +6,7 @@ A universal web-based chat interface for ANY Claude Project. Supports both the o
 
 ### Core Features
 - **Dual Connection Modes** - Use official API or direct Claude.ai web access
+- **Mode Selector** - Switch between API and Projects mode in Settings (when both configured)
 - **Claude Projects Support** - Access your Claude Projects with their knowledge bases
 - **Project Selector** - Switch between multiple Claude Projects on the fly
 - **Configuration-driven** - Works with any Claude Project by editing YAML config
@@ -51,6 +52,15 @@ Use the standard Anthropic API for direct Claude access. This mode:
 - Uses your API key directly with Anthropic
 
 **Header displays:** `Prompt Engineering Workbench | Claude AI`
+
+### Switching Modes
+
+If you have both an API key and a Claude.ai cookie configured, you can switch between modes:
+
+1. Click the **Settings** (gear icon) in the header
+2. In the **Connection** section, you'll see mode toggle buttons
+3. Click **Projects** or **API** to switch modes
+4. The UI will update automatically (header title, project selector visibility)
 
 ## Quick Start
 
@@ -267,7 +277,8 @@ claude_project_chat/
 | `/api/session/{id}` | GET | Get session history |
 | `/api/session/{id}` | DELETE | Clear session |
 | `/api/config` | GET | Get project config |
-| `/api/client-status` | GET | Check connection mode |
+| `/api/client-status` | GET | Check connection mode and available options |
+| `/api/switch-mode` | POST | Switch between API and Web modes |
 | `/api/update-cookie` | POST | Update Claude.ai cookie |
 | `/api/projects` | GET | List available projects |
 | `/api/projects/set-active` | POST | Switch active project |
