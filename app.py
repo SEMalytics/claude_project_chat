@@ -4,6 +4,7 @@ Flask server for Claude Project Chat Interface.
 Main application entry point.
 """
 
+import os
 import uuid
 from functools import wraps
 
