@@ -84,6 +84,9 @@ class ChatInterface {
                         // Make project manager globally accessible for startNewChat
                         window.projectManager = this.templateSettings.projectManager;
                     }
+
+                    // Check connection status to update UI (title, project selector visibility)
+                    this.templateSettings.checkConnectionStatus();
                 }, 500);
             }
         }

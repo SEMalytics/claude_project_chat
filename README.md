@@ -37,11 +37,20 @@ A universal web-based chat interface for ANY Claude Project. Supports both the o
 Connect directly to Claude.ai using your browser session cookie. This gives you access to:
 - Your Claude Projects with their custom instructions and knowledge bases
 - Project-specific conversations
+- Project selector to switch between projects
 - All features available in the Claude.ai web interface
+
+**Header displays:** `Prompt Engineering Workbench | Claude Projects`
 
 ### Option 2: Official Anthropic API
 
-Use the standard Anthropic API for direct Claude access without project features.
+Use the standard Anthropic API for direct Claude access. This mode:
+- Works as a template-based prompt engine
+- Does NOT have access to Claude Projects or knowledge bases
+- Hides the project selector (not applicable)
+- Uses your API key directly with Anthropic
+
+**Header displays:** `Prompt Engineering Workbench | Claude AI`
 
 ## Quick Start
 

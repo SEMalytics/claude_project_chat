@@ -1838,12 +1838,17 @@ class TemplateSettings {
             const response = await fetch('/api/client-status');
             const data = await response.json();
 
+            // Store connection mode globally
+            window.connectionMode = data.mode;
+
             if (data.mode === 'web' && data.connected) {
                 statusEl.textContent = 'Connected (Web Client)';
                 statusEl.className = 'ml-2 text-sm text-green-600 font-medium';
+                this.updateUIForMode('web');
             } else if (data.mode === 'api' && data.connected) {
                 statusEl.textContent = 'Connected (API)';
                 statusEl.className = 'ml-2 text-sm text-blue-600 font-medium';
+                this.updateUIForMode('api');
             } else if (data.error) {
                 statusEl.textContent = `Error: ${data.error}`;
                 statusEl.className = 'ml-2 text-sm text-red-600';
@@ -1854,6 +1859,39 @@ class TemplateSettings {
         } catch (e) {
             statusEl.textContent = 'Failed to check status';
             statusEl.className = 'ml-2 text-sm text-red-600';
+        }
+    }
+
+    /**
+     * Update UI elements based on connection mode
+     */
+    updateUIForMode(mode) {
+        const headerTitle = document.querySelector('header h1');
+        const projectSelectorContainer = document.getElementById('projectSelectorContainer');
+        const projectSection = document.querySelector('.mb-6.p-4.bg-purple-50'); // Project section in settings
+
+        if (mode === 'api') {
+            // API mode: Update title and hide project features
+            if (headerTitle) {
+                headerTitle.textContent = 'Prompt Engineering Workbench | Claude AI';
+            }
+            document.title = 'Prompt Engineering Workbench | Claude AI';
+
+            // Hide project selector
+            if (projectSelectorContainer) {
+                projectSelectorContainer.classList.add('hidden');
+            }
+
+            // Hide project section in settings
+            if (projectSection) {
+                projectSection.classList.add('hidden');
+            }
+        } else {
+            // Web mode: Show full project features
+            if (headerTitle) {
+                headerTitle.textContent = 'Prompt Engineering Workbench | Claude Projects';
+            }
+            document.title = 'Prompt Engineering Workbench | Claude Projects';
         }
     }
 
