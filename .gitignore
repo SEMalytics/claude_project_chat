@@ -47,3 +47,6 @@ htmlcov/
 
 # Logs
 *.log
+
+# Custom/Private prompts (project-specific, not shared)
+custom_prompts.yaml

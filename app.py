@@ -7,13 +7,23 @@ Main application entry point.
 import uuid
 from functools import wraps
 
+# Load environment variables FIRST (before any imports that use them)
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, render_template, request, jsonify
 
 from config import Config, ProjectConfig
 from utils.claude_client import ClaudeClient
+from utils.claude_web_client import ClaudeWebClient, get_claude_web_client
 from utils.file_processor import FileProcessor
 from utils.url_fetcher import URLFetcher
-from utils.prompt_templates import get_default_templates, get_default_categories
+from utils.prompt_templates import (
+    get_default_templates,
+    get_default_categories,
+    get_all_templates,
+    get_all_categories
+)
 from utils.prompt_compiler import (
     compile_prompt,
     validate_template_values,
@@ -30,22 +40,34 @@ project_config = ProjectConfig()
 file_processor = FileProcessor()
 url_fetcher = URLFetcher()
 
-# Initialize Claude client (lazy - will fail gracefully if no API key)
+# Initialize Claude client (lazy - will fail gracefully if no API key/cookie)
 claude_client = None
+use_web_client = False
 
 # In-memory conversation storage
 conversations = {}
 
 
 def get_claude_client():
-    """Get or create Claude client."""
-    global claude_client
+    """Get or create Claude client (web client preferred if cookie available)."""
+    global claude_client, use_web_client
+
     if claude_client is None:
-        Config.validate()
-        claude_client = ClaudeClient(
-            api_key=Config.ANTHROPIC_API_KEY,
-            project_id=Config.CLAUDE_PROJECT_ID
-        )
+        # Try web client first (for Claude Projects access)
+        web_client = get_claude_web_client()
+        if web_client:
+            claude_client = web_client
+            use_web_client = True
+            app.logger.info("Using Claude Web Client (claude.ai direct access)")
+        else:
+            # Fall back to official API
+            Config.validate()
+            claude_client = ClaudeClient(
+                api_key=Config.ANTHROPIC_API_KEY,
+                project_id=Config.CLAUDE_PROJECT_ID
+            )
+            app.logger.info("Using official Anthropic API")
+
     return claude_client
 
 
@@ -105,6 +127,9 @@ def chat():
         return jsonify({'error': 'No data provided'}), 400
 
     message = data.get('message', '').strip()
+
+    # Debug: Log the message to see if underscores are present
+    app.logger.info(f"Chat message received (first 500 chars): {message[:500]}")
     files = data.get('files', [])
     session_id = data.get('session_id') or str(uuid.uuid4())
     prompt_id = data.get('prompt_id')
@@ -276,6 +301,282 @@ def get_config():
     })
 
 
+@app.route('/api/client-status', methods=['GET'])
+def get_client_status():
+    """
+    Get the current Claude client status.
+
+    Response JSON:
+        mode: str - 'web' or 'api'
+        connected: bool - Whether client is initialized
+    """
+    # Initialize client if not already done
+    try:
+        get_claude_client()
+    except Exception as e:
+        return jsonify({
+            'mode': 'error',
+            'connected': False,
+            'error': str(e)
+        })
+
+    return jsonify({
+        'mode': 'web' if use_web_client else 'api',
+        'connected': claude_client is not None
+    })
+
+
+@app.route('/api/update-cookie', methods=['POST'])
+@handle_errors
+def update_cookie():
+    """
+    Update the Claude.ai cookie for web client authentication.
+
+    Request JSON:
+        cookie: str - The new cookie string from claude.ai
+
+    Response JSON:
+        success: bool - Whether the update was successful
+        mode: str - Current client mode after update
+    """
+    global claude_client, use_web_client
+
+    data = request.json
+    if not data or 'cookie' not in data:
+        return jsonify({'error': 'Cookie required'}), 400
+
+    new_cookie = data['cookie'].strip()
+    if not new_cookie:
+        return jsonify({'error': 'Cookie cannot be empty'}), 400
+
+    # Validate cookie has sessionKey
+    if 'sessionKey=' not in new_cookie:
+        return jsonify({'error': 'Invalid cookie - missing sessionKey'}), 400
+
+    try:
+        # Create new web client with updated cookie
+        from utils.claude_web_client import ClaudeWebClient
+        import os
+
+        conversation_id = os.getenv('CLAUDE_CONVERSATION_ID')
+        new_client = ClaudeWebClient(new_cookie, conversation_id)
+
+        # Test the connection by listing conversations
+        conversations = new_client.list_conversations()
+        if conversations is None:
+            return jsonify({'error': 'Failed to connect with new cookie'}), 400
+
+        # Update the global client
+        claude_client = new_client
+        use_web_client = True
+
+        # Optionally update .env file
+        if data.get('save_to_env', False):
+            _update_env_cookie(new_cookie)
+
+        return jsonify({
+            'success': True,
+            'mode': 'web',
+            'conversations_count': len(conversations) if isinstance(conversations, list) else 0
+        })
+
+    except Exception as e:
+        return jsonify({'error': f'Failed to update cookie: {str(e)}'}), 500
+
+
+def _update_env_cookie(new_cookie: str):
+    """Update the CLAUDE_COOKIE in .env file."""
+    import re
+    env_path = '.env'
+
+    try:
+        with open(env_path, 'r') as f:
+            content = f.read()
+
+        # Replace the CLAUDE_COOKIE line
+        pattern = r'^CLAUDE_COOKIE=.*$'
+        replacement = f'CLAUDE_COOKIE={new_cookie}'
+        new_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
+
+        with open(env_path, 'w') as f:
+            f.write(new_content)
+
+    except Exception as e:
+        app.logger.error(f'Failed to update .env: {e}')
+
+
+@app.route('/api/conversations/new', methods=['POST'])
+@handle_errors
+def create_new_conversation():
+    """
+    Create a new conversation (starts fresh chat).
+
+    Request JSON (optional):
+        project_uuid: str - Project to create conversation in
+
+    Response JSON:
+        success: bool
+        conversation_id: str - The new conversation UUID
+    """
+    global claude_client
+
+    if not use_web_client:
+        return jsonify({'error': 'This endpoint requires the web client'}), 400
+
+    client = get_claude_client()
+
+    # Get optional project UUID from request
+    data = request.json or {}
+    project_uuid = data.get('project_uuid')
+
+    try:
+        # Create new conversation on claude.ai (optionally within a project)
+        conv_id = client.create_new_conversation(project_uuid)
+
+        # Also clear local session history
+        # Generate new session ID for frontend
+        new_session_id = str(uuid.uuid4())
+
+        return jsonify({
+            'success': True,
+            'conversation_id': conv_id,
+            'session_id': new_session_id,
+            'project_uuid': project_uuid
+        })
+    except Exception as e:
+        return jsonify({'error': f'Failed to create conversation: {str(e)}'}), 500
+
+
+@app.route('/api/conversations', methods=['GET'])
+@handle_errors
+def list_conversations():
+    """
+    List all conversations (web client only).
+
+    Use this to find your project's conversation ID.
+
+    Response JSON:
+        conversations: list - List of conversation objects with uuid, name, etc.
+        error: str - Error message if not using web client
+    """
+    if not use_web_client:
+        return jsonify({
+            'error': 'This endpoint requires the web client. Set CLAUDE_COOKIE in .env',
+            'conversations': []
+        })
+
+    client = get_claude_client()
+    conversations_list = client.list_conversations()
+
+    return jsonify({
+        'conversations': conversations_list
+    })
+
+
+@app.route('/api/projects', methods=['GET'])
+@handle_errors
+def list_projects():
+    """
+    List all unique Claude Projects from conversations.
+
+    Response JSON:
+        projects: list - List of unique project objects with uuid, name
+        error: str - Error message if not using web client
+    """
+    if not use_web_client:
+        return jsonify({
+            'error': 'This endpoint requires the web client. Set CLAUDE_COOKIE in .env',
+            'projects': []
+        })
+
+    client = get_claude_client()
+    conversations_list = client.list_conversations()
+
+    # Extract unique projects
+    projects = {}
+    for conv in conversations_list or []:
+        project = conv.get('project')
+        project_uuid = conv.get('project_uuid')
+
+        if project_uuid and project:
+            if project_uuid not in projects:
+                # Find the most recent conversation for this project
+                projects[project_uuid] = {
+                    'uuid': project_uuid,
+                    'name': project.get('name', 'Unnamed Project'),
+                    'conversation_uuid': conv.get('uuid'),
+                    'conversation_name': conv.get('name', 'Untitled'),
+                    'updated_at': conv.get('updated_at')
+                }
+
+    # Sort by name
+    project_list = sorted(projects.values(), key=lambda p: p['name'].lower())
+
+    return jsonify({
+        'projects': project_list
+    })
+
+
+@app.route('/api/projects/set-active', methods=['POST'])
+@handle_errors
+def set_active_project():
+    """
+    Set the active project and conversation for chatting.
+
+    Request JSON:
+        project_uuid: str - The project UUID to activate (None for no project)
+        conversation_uuid: str - Optional specific conversation UUID
+
+    Response JSON:
+        success: bool
+        project: dict - The activated project info
+    """
+    global claude_client
+
+    if not use_web_client:
+        return jsonify({'error': 'This endpoint requires the web client'}), 400
+
+    data = request.json
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    project_uuid = data.get('project_uuid')
+    conversation_uuid = data.get('conversation_uuid')
+
+    # Handle "No Project" selection - clear the conversation so a new one is created
+    if not project_uuid:
+        if claude_client:
+            claude_client.set_conversation(None)
+        return jsonify({
+            'success': True,
+            'project_uuid': None,
+            'conversation_uuid': None
+        })
+
+    # If no conversation specified, find or create one for this project
+    if not conversation_uuid:
+        client = get_claude_client()
+        conversations_list = client.list_conversations()
+
+        # Find most recent conversation in this project
+        for conv in conversations_list or []:
+            if conv.get('project_uuid') == project_uuid:
+                conversation_uuid = conv.get('uuid')
+                break
+
+    if not conversation_uuid:
+        return jsonify({'error': 'No conversation found for this project'}), 400
+
+    # Update the client's conversation
+    claude_client.set_conversation(conversation_uuid)
+
+    return jsonify({
+        'success': True,
+        'project_uuid': project_uuid,
+        'conversation_uuid': conversation_uuid
+    })
+
+
 # =============================================================================
 # Template API Routes
 # =============================================================================
@@ -283,28 +584,30 @@ def get_config():
 @app.route('/api/templates', methods=['GET'])
 def get_templates():
     """
-    Get all available prompt templates.
+    Get all available prompt templates (default + custom).
+
+    Custom templates are loaded from custom_prompts.yaml (gitignored).
 
     Response JSON:
         templates: list - List of template objects
         categories: list - List of category objects
     """
     return jsonify({
-        'templates': get_default_templates(),
-        'categories': get_default_categories()
+        'templates': get_all_templates(),
+        'categories': get_all_categories()
     })
 
 
 @app.route('/api/templates/categories', methods=['GET'])
 def get_categories():
     """
-    Get all template categories.
+    Get all template categories (default + custom).
 
     Response JSON:
         categories: list - List of category objects
     """
     return jsonify({
-        'categories': get_default_categories()
+        'categories': get_all_categories()
     })
 
 

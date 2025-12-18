@@ -14,6 +14,7 @@ class TemplateStorage {
         this.STORAGE_KEY = 'claude_chat_templates';
         this.FAVORITES_KEY = 'claude_chat_favorites';
         this.USE_COUNTS_KEY = 'claude_chat_use_counts';
+        this.ENABLED_KEY = 'claude_chat_enabled_templates';
     }
 
     /**
@@ -115,6 +116,67 @@ class TemplateStorage {
         } catch (e) {
             return 0;
         }
+    }
+
+    /**
+     * Get enabled templates map (returns null if never configured, meaning all enabled)
+     */
+    getEnabledTemplates() {
+        try {
+            const stored = localStorage.getItem(this.ENABLED_KEY);
+            return stored ? JSON.parse(stored) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    /**
+     * Check if a template is enabled
+     */
+    isTemplateEnabled(templateId) {
+        const enabled = this.getEnabledTemplates();
+        // If never configured, all templates are enabled
+        if (enabled === null) return true;
+        return enabled[templateId] !== false;
+    }
+
+    /**
+     * Set template enabled state
+     */
+    setTemplateEnabled(templateId, isEnabled) {
+        let enabled = this.getEnabledTemplates() || {};
+        enabled[templateId] = isEnabled;
+        localStorage.setItem(this.ENABLED_KEY, JSON.stringify(enabled));
+    }
+
+    /**
+     * Set multiple templates enabled state
+     */
+    setMultipleEnabled(templateStates) {
+        localStorage.setItem(this.ENABLED_KEY, JSON.stringify(templateStates));
+    }
+
+    /**
+     * Enable all templates
+     */
+    enableAllTemplates() {
+        localStorage.removeItem(this.ENABLED_KEY);
+    }
+
+    /**
+     * Disable all templates
+     */
+    disableAllTemplates(templateIds) {
+        const disabled = {};
+        templateIds.forEach(id => disabled[id] = false);
+        localStorage.setItem(this.ENABLED_KEY, JSON.stringify(disabled));
+    }
+
+    /**
+     * Reset to default (all enabled)
+     */
+    resetEnabledTemplates() {
+        localStorage.removeItem(this.ENABLED_KEY);
     }
 }
 
@@ -237,11 +299,12 @@ class VariableInputGenerator {
 
     static generateUrlInput(variable, id, value) {
         return `
-            <input type="url"
+            <input type="text"
                    id="${id}"
                    name="${variable.name}"
+                   data-type="url"
                    value="${this.escapeHtml(value || variable.defaultValue || '')}"
-                   placeholder="${this.escapeHtml(variable.placeholder || 'https://example.com')}"
+                   placeholder="${this.escapeHtml(variable.placeholder || 'example.com or https://example.com')}"
                    class="variable-input w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                    ${variable.required ? 'required' : ''}>
         `;
@@ -299,25 +362,123 @@ class PromptCompiler {
     }
 
     /**
-     * Compile template with values
+     * Sanitize a value - strip markdown formatting and extra whitespace
+     * @param {string} value - The value to sanitize
+     * @param {string} type - The variable type (text, url, etc.)
      */
-    static compile(template, values) {
+    static sanitizeValue(value, type = 'text') {
+        if (!value) return value;
+
+        let sanitized = value.trim();
+
+        // For URLs, strip any markdown formatting that might have been added
+        if (type === 'url') {
+            // First, check for markdown link syntax: [text](url) - extract just the URL
+            const linkMatch = sanitized.match(/\[([^\]]*)\]\(([^)]+)\)/);
+            if (linkMatch) {
+                // Use the URL part (group 2), or the text part if URL is missing
+                sanitized = linkMatch[2] || linkMatch[1];
+            }
+
+            // Remove surrounding underscores (markdown bold/italic)
+            sanitized = sanitized.replace(/^_+|_+$/g, '');
+            // Remove surrounding asterisks (markdown bold/italic)
+            sanitized = sanitized.replace(/^\*+|\*+$/g, '');
+            // Remove surrounding backticks (code)
+            sanitized = sanitized.replace(/^`+|`+$/g, '');
+            // Remove angle brackets sometimes used for URLs
+            sanitized = sanitized.replace(/^<|>$/g, '');
+            // Remove any existing quotes
+            sanitized = sanitized.replace(/^['"]|['"]$/g, '');
+            // Keep as-is - no auto-prefix, allow bare domains like statsig.com
+        }
+
+        return sanitized;
+    }
+
+    /**
+     * Compile template with values
+     * @param {string} template - The template string with [variable] placeholders
+     * @param {Object} values - Map of variable names to values
+     * @param {Array} variables - Optional array of variable definitions (to identify optional fields)
+     */
+    static compile(template, values, variables = []) {
         let result = template;
 
+        // First, replace all filled values
         for (const [name, value] of Object.entries(values)) {
-            const pattern = new RegExp(`\\[${name}\\]`, 'g');
-            result = result.replace(pattern, value);
+            if (value && value.trim()) {
+                // Find variable definition to get type for sanitization
+                const varDef = variables.find(v => v.name === name);
+                const varType = varDef?.type || 'text';
+                const sanitizedValue = this.sanitizeValue(value, varType);
+
+                // Debug log for URL values
+                if (varType === 'url') {
+                    console.log(`[PromptCompiler] URL variable "${name}":`, {
+                        original: value,
+                        sanitized: sanitizedValue,
+                        type: varType
+                    });
+                }
+
+                const pattern = new RegExp(`\\[${name}\\]`, 'g');
+                result = result.replace(pattern, sanitizedValue);
+            }
         }
+
+        // Then, handle unfilled optional variables - remove them and clean up
+        const allVars = this.extractVariables(result); // Get remaining unfilled variables
+
+        for (const varName of allVars) {
+            const varDef = variables.find(v => v.name === varName);
+            const isRequired = varDef?.required !== false; // Default to required if not specified
+
+            if (!isRequired) {
+                // Remove the entire line (including newline) if it only contains the optional variable
+                // Pattern matches: start of line, any text, [variable], any text, end of line + optional newline
+                const linePattern = new RegExp(`^[^\\n]*\\[${varName}\\][^\\n]*\\n?`, 'gm');
+                result = result.replace(linePattern, (match) => {
+                    // Check if the line has meaningful content besides the variable
+                    const withoutVar = match.replace(`[${varName}]`, '').replace(/\n$/, '').trim();
+                    // If only punctuation, labels ending in colon, or empty - remove entire line
+                    if (!withoutVar || /^[\s\-\*\•:]+$/.test(withoutVar) || /^.{0,40}:$/.test(withoutVar)) {
+                        return ''; // Remove the entire line including newline
+                    }
+                    // Otherwise just remove the placeholder but keep the rest
+                    return match.replace(`[${varName}]`, '').replace(/\s+\n$/, '\n');
+                });
+            }
+        }
+
+        // Clean up multiple consecutive blank lines
+        result = result.replace(/\n{3,}/g, '\n\n');
+        // Clean up leading/trailing whitespace
+        result = result.trim();
 
         return result;
     }
 
     /**
      * Get unfilled variables
+     * @param {string} template - The template string
+     * @param {Object} values - Map of variable names to values
+     * @param {Array} variables - Optional array of variable definitions
+     * @param {boolean} requiredOnly - If true, only return unfilled required variables
      */
-    static getUnfilled(template, values) {
+    static getUnfilled(template, values, variables = [], requiredOnly = false) {
         const allVars = this.extractVariables(template);
-        return allVars.filter(v => !values[v] || !values[v].trim());
+        return allVars.filter(varName => {
+            const isEmpty = !values[varName] || !values[varName].trim();
+            if (!isEmpty) return false;
+
+            if (requiredOnly && variables.length > 0) {
+                const varDef = variables.find(v => v.name === varName);
+                // Default to required if not specified
+                return varDef?.required !== false;
+            }
+            return true;
+        });
     }
 
     /**
@@ -336,9 +497,10 @@ class PromptCompiler {
 
         // Type-specific validation
         if (type === 'url') {
-            const urlPattern = /^https?:\/\/[^\s/$.?#].[^\s]*$/i;
+            // Accept bare domains (statsig.com) or full URLs (https://statsig.com)
+            const urlPattern = /^(https?:\/\/)?[a-zA-Z0-9][-a-zA-Z0-9]*(\.[a-zA-Z0-9][-a-zA-Z0-9]*)+(\/[^\s]*)?$/i;
             if (!urlPattern.test(value)) {
-                return validation?.errorMessage || 'Please enter a valid URL';
+                return validation?.errorMessage || 'Please enter a valid domain or URL';
             }
         }
 
@@ -425,11 +587,12 @@ class PromptBuilder {
             const customTemplates = this.storage.getCustomTemplates();
             const favorites = this.storage.getFavorites();
 
-            // Mark favorites and add use counts
+            // Mark favorites, add use counts, and enabled state
             const allTemplates = [...data.templates, ...customTemplates].map(t => ({
                 ...t,
                 isFavorite: favorites.includes(t.id),
-                useCount: this.storage.getUseCount(t.id)
+                useCount: this.storage.getUseCount(t.id),
+                isEnabled: this.storage.isTemplateEnabled(t.id)
             }));
 
             this.templates = allTemplates;
@@ -439,6 +602,13 @@ class PromptBuilder {
             this.templates = [];
             this.categories = [];
         }
+    }
+
+    /**
+     * Get only enabled templates
+     */
+    getActiveTemplates() {
+        return this.templates.filter(t => t.isEnabled);
     }
 
     /**
@@ -721,13 +891,21 @@ class PromptBuilder {
     }
 
     /**
-     * Render category tabs in dropdown
+     * Render category tabs in dropdown (only shows categories with enabled templates)
      */
     renderCategoryTabs() {
         const tabsContainer = document.getElementById('categoryTabs');
         if (!tabsContainer) return;
 
-        const tabs = this.categories.map(cat => `
+        // Get enabled templates
+        const activeTemplates = this.getActiveTemplates();
+
+        // Only show categories that have at least one enabled template
+        const activeCategories = this.categories.filter(cat =>
+            activeTemplates.some(t => t.category === cat.id)
+        );
+
+        const tabs = activeCategories.map(cat => `
             <button type="button"
                     class="category-tab px-3 py-1 text-sm rounded-full hover:bg-gray-100 text-gray-600"
                     data-category="${cat.id}">
@@ -750,7 +928,8 @@ class PromptBuilder {
         const listContainer = document.getElementById('templateList');
         if (!listContainer) return;
 
-        let filtered = this.templates;
+        // Start with only enabled templates
+        let filtered = this.getActiveTemplates();
 
         // Filter by search
         if (searchTerm) {
@@ -1023,7 +1202,17 @@ class PromptBuilder {
      */
     handleVariableChange(input) {
         const name = input.name;
-        const value = input.value;
+        let value = input.value;
+
+        // Sanitize URL inputs to remove accidental markdown formatting
+        const isUrl = input.type === 'url' || input.dataset.type === 'url';
+        if (isUrl) {
+            value = PromptCompiler.sanitizeValue(value, 'url');
+            // Update the input field if value was sanitized
+            if (value !== input.value) {
+                input.value = value;
+            }
+        }
 
         this.variableValues[name] = value;
         this.updatePreview();
@@ -1051,8 +1240,19 @@ class PromptBuilder {
     updatePreview() {
         if (!this.selectedTemplate) return;
 
-        const compiled = PromptCompiler.compile(this.selectedTemplate.template, this.variableValues);
-        const unfilled = PromptCompiler.getUnfilled(this.selectedTemplate.template, this.variableValues);
+        const variables = this.selectedTemplate.variables || [];
+        const compiled = PromptCompiler.compile(
+            this.selectedTemplate.template,
+            this.variableValues,
+            variables
+        );
+        // Only warn about unfilled required variables
+        const unfilled = PromptCompiler.getUnfilled(
+            this.selectedTemplate.template,
+            this.variableValues,
+            variables,
+            true // requiredOnly
+        );
 
         const previewContent = document.querySelector('#previewContent pre');
         if (previewContent) {
@@ -1177,7 +1377,11 @@ class PromptBuilder {
     submitPrompt() {
         if (!this.validate() || !this.selectedTemplate) return;
 
-        const compiled = PromptCompiler.compile(this.selectedTemplate.template, this.variableValues);
+        const compiled = PromptCompiler.compile(
+            this.selectedTemplate.template,
+            this.variableValues,
+            this.selectedTemplate.variables || []
+        );
 
         // Call the onSubmit callback
         this.onSubmit(compiled, {
@@ -1185,6 +1389,29 @@ class PromptBuilder {
             templateName: this.selectedTemplate.name,
             values: { ...this.variableValues }
         });
+
+        // Collapse the prompt builder sections after submission
+        this.collapseBuilder();
+    }
+
+    /**
+     * Collapse the prompt builder to show only the template selector
+     */
+    collapseBuilder() {
+        document.getElementById('templateInfo')?.classList.add('hidden');
+        document.getElementById('variableForm')?.classList.add('hidden');
+        document.getElementById('previewPanel')?.classList.add('hidden');
+        document.getElementById('submitControls')?.classList.add('hidden');
+
+        // Reset the dropdown button text
+        document.getElementById('selectedTemplateName').textContent = 'Select a template...';
+        document.getElementById('selectedTemplateName').classList.add('text-gray-500');
+        document.getElementById('selectedTemplateName').classList.remove('text-gray-800');
+
+        // Clear selected template
+        this.selectedTemplate = null;
+        this.variableValues = {};
+        this.validationErrors = {};
     }
 
     /**
@@ -1192,7 +1419,11 @@ class PromptBuilder {
      */
     getCompiledPrompt() {
         if (!this.selectedTemplate) return '';
-        return PromptCompiler.compile(this.selectedTemplate.template, this.variableValues);
+        return PromptCompiler.compile(
+            this.selectedTemplate.template,
+            this.variableValues,
+            this.selectedTemplate.variables || []
+        );
     }
 
     // =========================================================================
@@ -1492,7 +1723,566 @@ class PromptBuilder {
     }
 }
 
+// =============================================================================
+// Settings Modal Handler (separate from PromptBuilder for global access)
+// =============================================================================
+
+class TemplateSettings {
+    constructor(promptBuilder) {
+        this.promptBuilder = promptBuilder;
+        this.storage = promptBuilder.storage;
+        this.pendingChanges = {};
+        this.projectManager = new ProjectManager();
+        this.pendingProjectChanges = {};
+        this.bindEvents();
+        this.bindCookieEvents();
+        this.bindProjectEvents();
+    }
+
+    bindProjectEvents() {
+        // Refresh projects button
+        document.getElementById('refreshProjectsBtn')?.addEventListener('click', () => {
+            this.loadAndRenderProjects();
+        });
+    }
+
+    async loadAndRenderProjects() {
+        const container = document.getElementById('projectsList');
+        if (!container) return;
+
+        container.innerHTML = '<div class="text-sm text-gray-500">Loading projects...</div>';
+
+        await this.projectManager.loadProjects();
+
+        // Initialize pending changes from current state
+        this.pendingProjectChanges = { ...this.projectManager.enabledProjects };
+
+        this.renderProjectsList();
+    }
+
+    renderProjectsList() {
+        const container = document.getElementById('projectsList');
+        if (!container) return;
+
+        const projects = this.projectManager.projects;
+
+        if (projects.length === 0) {
+            container.innerHTML = `
+                <div class="text-sm text-gray-500">
+                    No projects found. Make sure you're connected with a valid cookie.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = projects.map(p => `
+            <label class="flex items-center justify-between p-2 rounded-lg hover:bg-purple-100 cursor-pointer">
+                <div class="flex-1">
+                    <span class="font-medium text-gray-700">${p.name}</span>
+                    <p class="text-xs text-gray-500 truncate">Last: ${p.conversation_name}</p>
+                </div>
+                <input type="checkbox"
+                       class="project-toggle w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                       data-project-uuid="${p.uuid}"
+                       data-conversation-uuid="${p.conversation_uuid}"
+                       ${this.pendingProjectChanges[p.uuid] ? 'checked' : ''}>
+            </label>
+        `).join('');
+
+        // Bind toggle events
+        container.querySelectorAll('.project-toggle').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const uuid = e.target.dataset.projectUuid;
+                this.pendingProjectChanges[uuid] = e.target.checked;
+            });
+        });
+    }
+
+    saveProjectSettings() {
+        this.projectManager.setEnabledProjects(this.pendingProjectChanges);
+        this.projectManager.updateUI();
+
+        // If a project was just enabled and none were active before, activate it
+        const activeProjects = this.projectManager.getActiveProjects();
+        if (activeProjects.length > 0 && !this.projectManager.activeProject) {
+            const lastProject = this.projectManager.getLastProject();
+            const target = activeProjects.find(p => p.uuid === lastProject) || activeProjects[0];
+            if (target) {
+                this.projectManager.setActiveProject(target.uuid, target.conversation_uuid);
+            }
+        }
+    }
+
+    bindCookieEvents() {
+        // Update cookie button
+        document.getElementById('updateCookieBtn')?.addEventListener('click', () => {
+            this.updateCookie();
+        });
+
+        // Refresh connection status
+        document.getElementById('refreshConnectionBtn')?.addEventListener('click', () => {
+            this.checkConnectionStatus();
+        });
+    }
+
+    async checkConnectionStatus() {
+        const statusEl = document.getElementById('connectionMode');
+        if (!statusEl) return;
+
+        statusEl.textContent = 'Checking...';
+        statusEl.className = 'ml-2 text-sm text-gray-500';
+
+        try {
+            const response = await fetch('/api/client-status');
+            const data = await response.json();
+
+            if (data.mode === 'web' && data.connected) {
+                statusEl.textContent = 'Connected (Web Client)';
+                statusEl.className = 'ml-2 text-sm text-green-600 font-medium';
+            } else if (data.mode === 'api' && data.connected) {
+                statusEl.textContent = 'Connected (API)';
+                statusEl.className = 'ml-2 text-sm text-blue-600 font-medium';
+            } else if (data.error) {
+                statusEl.textContent = `Error: ${data.error}`;
+                statusEl.className = 'ml-2 text-sm text-red-600';
+            } else {
+                statusEl.textContent = 'Not connected';
+                statusEl.className = 'ml-2 text-sm text-red-600';
+            }
+        } catch (e) {
+            statusEl.textContent = 'Failed to check status';
+            statusEl.className = 'ml-2 text-sm text-red-600';
+        }
+    }
+
+    async updateCookie() {
+        const cookieInput = document.getElementById('newCookieInput');
+        const saveToEnv = document.getElementById('saveCookieToEnv')?.checked || false;
+        const statusEl = document.getElementById('cookieUpdateStatus');
+        const btn = document.getElementById('updateCookieBtn');
+
+        if (!cookieInput || !statusEl) return;
+
+        const newCookie = cookieInput.value.trim();
+        if (!newCookie) {
+            this.showCookieStatus('Please paste a cookie string', 'error');
+            return;
+        }
+
+        if (!newCookie.includes('sessionKey=')) {
+            this.showCookieStatus('Invalid cookie - must contain sessionKey', 'error');
+            return;
+        }
+
+        // Disable button during update
+        if (btn) btn.disabled = true;
+        this.showCookieStatus('Updating cookie...', 'info');
+
+        try {
+            const response = await fetch('/api/update-cookie', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    cookie: newCookie,
+                    save_to_env: saveToEnv
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showCookieStatus(
+                    `Cookie updated! Found ${data.conversations_count} conversations.`,
+                    'success'
+                );
+                cookieInput.value = '';
+                this.checkConnectionStatus();
+            } else {
+                this.showCookieStatus(data.error || 'Failed to update cookie', 'error');
+            }
+        } catch (e) {
+            this.showCookieStatus(`Error: ${e.message}`, 'error');
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    showCookieStatus(message, type) {
+        const statusEl = document.getElementById('cookieUpdateStatus');
+        if (!statusEl) return;
+
+        statusEl.textContent = message;
+        statusEl.classList.remove('hidden', 'text-green-600', 'text-red-600', 'text-blue-600');
+
+        switch (type) {
+            case 'success':
+                statusEl.classList.add('text-green-600');
+                break;
+            case 'error':
+                statusEl.classList.add('text-red-600');
+                break;
+            case 'info':
+                statusEl.classList.add('text-blue-600');
+                break;
+        }
+    }
+
+    bindEvents() {
+        // Open settings
+        document.getElementById('settingsBtn')?.addEventListener('click', () => {
+            this.openSettings();
+        });
+
+        // Close settings
+        document.getElementById('closeSettingsBtn')?.addEventListener('click', () => {
+            this.closeSettings();
+        });
+
+        // Click outside to close
+        document.getElementById('settingsModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'settingsModal' || e.target.classList.contains('bg-black')) {
+                this.closeSettings();
+            }
+        });
+
+        // Enable all
+        document.getElementById('enableAllTemplates')?.addEventListener('click', () => {
+            this.setAllTemplates(true);
+        });
+
+        // Disable all
+        document.getElementById('disableAllTemplates')?.addEventListener('click', () => {
+            this.setAllTemplates(false);
+        });
+
+        // Reset to defaults
+        document.getElementById('resetSettingsBtn')?.addEventListener('click', () => {
+            this.resetToDefaults();
+        });
+
+        // Save changes
+        document.getElementById('saveSettingsBtn')?.addEventListener('click', () => {
+            this.saveSettings();
+        });
+    }
+
+    openSettings() {
+        // Initialize pending changes from current state
+        this.pendingChanges = {};
+        this.promptBuilder.templates.forEach(t => {
+            this.pendingChanges[t.id] = t.isEnabled;
+        });
+
+        this.renderSettingsList();
+        this.checkConnectionStatus();
+        this.loadAndRenderProjects();
+        document.getElementById('settingsModal')?.classList.remove('hidden');
+    }
+
+    closeSettings() {
+        document.getElementById('settingsModal')?.classList.add('hidden');
+    }
+
+    renderSettingsList() {
+        const container = document.getElementById('settingsTemplateList');
+        if (!container) return;
+
+        const templates = this.promptBuilder.templates;
+        const categories = this.promptBuilder.categories;
+
+        // Group templates by category
+        const grouped = {};
+        templates.forEach(t => {
+            const cat = categories.find(c => c.id === t.category) || { id: 'other', name: 'Other' };
+            if (!grouped[cat.id]) {
+                grouped[cat.id] = { name: cat.name, templates: [] };
+            }
+            grouped[cat.id].templates.push(t);
+        });
+
+        let html = '';
+        for (const [catId, catData] of Object.entries(grouped)) {
+            const enabledCount = catData.templates.filter(t => this.pendingChanges[t.id]).length;
+            const totalCount = catData.templates.length;
+
+            html += `
+                <div class="category-group border border-gray-200 rounded-lg overflow-hidden">
+                    <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200">
+                        <div class="flex items-center gap-3">
+                            <h4 class="font-medium text-gray-800">${catData.name}</h4>
+                            <span class="text-sm text-gray-500">${enabledCount}/${totalCount} enabled</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button type="button"
+                                    class="category-enable-all text-xs text-green-600 hover:text-green-800"
+                                    data-category="${catId}">
+                                Enable All
+                            </button>
+                            <button type="button"
+                                    class="category-disable-all text-xs text-red-600 hover:text-red-800"
+                                    data-category="${catId}">
+                                Disable All
+                            </button>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        ${catData.templates.map(t => `
+                            <label class="flex items-center justify-between px-4 py-3 hover:bg-gray-50 cursor-pointer">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-medium text-gray-700">${t.name}</span>
+                                        ${t.isCustom ? '<span class="text-xs px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded">Custom</span>' : ''}
+                                        ${t.isFavorite ? '<span class="text-yellow-500">★</span>' : ''}
+                                    </div>
+                                    <p class="text-sm text-gray-500 truncate">${t.description}</p>
+                                </div>
+                                <div class="ml-4">
+                                    <input type="checkbox"
+                                           class="template-toggle w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                           data-template-id="${t.id}"
+                                           ${this.pendingChanges[t.id] ? 'checked' : ''}>
+                                </div>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html;
+
+        // Bind toggle events
+        container.querySelectorAll('.template-toggle').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                this.pendingChanges[e.target.dataset.templateId] = e.target.checked;
+                this.renderSettingsList(); // Re-render to update counts
+            });
+        });
+
+        // Bind category enable/disable all
+        container.querySelectorAll('.category-enable-all').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const catId = e.target.dataset.category;
+                grouped[catId].templates.forEach(t => {
+                    this.pendingChanges[t.id] = true;
+                });
+                this.renderSettingsList();
+            });
+        });
+
+        container.querySelectorAll('.category-disable-all').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const catId = e.target.dataset.category;
+                grouped[catId].templates.forEach(t => {
+                    this.pendingChanges[t.id] = false;
+                });
+                this.renderSettingsList();
+            });
+        });
+    }
+
+    setAllTemplates(enabled) {
+        this.promptBuilder.templates.forEach(t => {
+            this.pendingChanges[t.id] = enabled;
+        });
+        this.renderSettingsList();
+    }
+
+    resetToDefaults() {
+        this.promptBuilder.templates.forEach(t => {
+            this.pendingChanges[t.id] = true;
+        });
+        this.renderSettingsList();
+    }
+
+    saveSettings() {
+        // Save template settings to storage
+        this.storage.setMultipleEnabled(this.pendingChanges);
+
+        // Update templates in memory
+        this.promptBuilder.templates.forEach(t => {
+            t.isEnabled = this.pendingChanges[t.id];
+        });
+
+        // Re-render category tabs and template list
+        this.promptBuilder.renderCategoryTabs();
+        this.promptBuilder.renderTemplateList();
+
+        // Save project settings
+        this.saveProjectSettings();
+
+        // Close modal
+        this.closeSettings();
+    }
+}
+
+// =============================================================================
+// Project Manager (handles Claude Project selection)
+// =============================================================================
+
+class ProjectManager {
+    constructor() {
+        this.STORAGE_KEY = 'claude_chat_projects';
+        this.LAST_PROJECT_KEY = 'claude_chat_last_project';
+        this.projects = [];
+        this.enabledProjects = this.getEnabledProjects();
+        this.activeProject = null;
+    }
+
+    getEnabledProjects() {
+        try {
+            const stored = localStorage.getItem(this.STORAGE_KEY);
+            return stored ? JSON.parse(stored) : {};
+        } catch (e) {
+            return {};
+        }
+    }
+
+    setEnabledProjects(projects) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(projects));
+        this.enabledProjects = projects;
+    }
+
+    isProjectEnabled(projectUuid) {
+        // If nothing is configured, nothing is enabled
+        if (Object.keys(this.enabledProjects).length === 0) return false;
+        return this.enabledProjects[projectUuid] === true;
+    }
+
+    getLastProject() {
+        return localStorage.getItem(this.LAST_PROJECT_KEY);
+    }
+
+    setLastProject(projectUuid) {
+        localStorage.setItem(this.LAST_PROJECT_KEY, projectUuid);
+    }
+
+    async loadProjects() {
+        try {
+            const response = await fetch('/api/projects');
+            const data = await response.json();
+            this.projects = data.projects || [];
+            return this.projects;
+        } catch (e) {
+            console.error('Failed to load projects:', e);
+            return [];
+        }
+    }
+
+    getActiveProjects() {
+        return this.projects.filter(p => this.isProjectEnabled(p.uuid));
+    }
+
+    async setActiveProject(projectUuid, conversationUuid = null) {
+        // Handle "No Project" selection
+        if (!projectUuid || projectUuid === 'none') {
+            this.activeProject = null;
+            this.setLastProject('none');
+            return true;
+        }
+
+        try {
+            const response = await fetch('/api/projects/set-active', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_uuid: projectUuid,
+                    conversation_uuid: conversationUuid
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                this.activeProject = projectUuid;
+                this.setLastProject(projectUuid);
+                return true;
+            }
+            return false;
+        } catch (e) {
+            console.error('Failed to set active project:', e);
+            return false;
+        }
+    }
+
+    async initialize() {
+        await this.loadProjects();
+
+        const activeProjects = this.getActiveProjects();
+        if (activeProjects.length === 0) return;
+
+        // Get last used project
+        const lastProject = this.getLastProject();
+
+        // If last selection was "No Project", keep it that way
+        if (lastProject === 'none') {
+            this.activeProject = null;
+            this.updateUI();
+            return;
+        }
+
+        // Otherwise, find the target project or default to "No Project"
+        const targetProject = activeProjects.find(p => p.uuid === lastProject);
+
+        if (targetProject) {
+            await this.setActiveProject(targetProject.uuid, targetProject.conversation_uuid);
+        } else {
+            // No specific project selected, default to "No Project"
+            this.activeProject = null;
+        }
+
+        this.updateUI();
+    }
+
+    updateUI() {
+        const container = document.getElementById('projectSelectorContainer');
+        const selector = document.getElementById('projectSelector');
+        const nameSpan = document.getElementById('activeProjectName');
+
+        if (!container || !selector) return;
+
+        const activeProjects = this.getActiveProjects();
+
+        if (activeProjects.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        // Always show selector (for "No Project" option)
+        container.classList.remove('hidden');
+        selector.classList.remove('hidden');
+        if (nameSpan) nameSpan.classList.add('hidden');
+
+        // Populate selector with "No Project" option first
+        const noProjectSelected = !this.activeProject || this.activeProject === 'none';
+        selector.innerHTML = `
+            <option value="none" ${noProjectSelected ? 'selected' : ''}>
+                No Project
+            </option>
+            ${activeProjects.map(p => `
+                <option value="${p.uuid}" ${p.uuid === this.activeProject ? 'selected' : ''}>
+                    ${p.name}
+                </option>
+            `).join('')}
+        `;
+
+        // Bind change event
+        selector.onchange = async (e) => {
+            const value = e.target.value;
+            if (value === 'none') {
+                await this.setActiveProject(null);
+            } else {
+                const project = activeProjects.find(p => p.uuid === value);
+                if (project) {
+                    await this.setActiveProject(project.uuid, project.conversation_uuid);
+                }
+            }
+        };
+    }
+}
+
 // Export for use
 window.PromptBuilder = PromptBuilder;
 window.TemplateStorage = TemplateStorage;
 window.PromptCompiler = PromptCompiler;
+window.TemplateSettings = TemplateSettings;
+window.ProjectManager = ProjectManager;

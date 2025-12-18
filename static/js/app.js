@@ -71,6 +71,21 @@ class ChatInterface {
                     this.sendTemplateMessage(compiledPrompt, metadata);
                 }
             });
+
+            // Initialize template settings after promptBuilder is ready
+            if (typeof TemplateSettings !== 'undefined') {
+                // Wait for templates to load before initializing settings
+                setTimeout(() => {
+                    this.templateSettings = new TemplateSettings(this.promptBuilder);
+
+                    // Initialize project manager UI after settings
+                    if (this.templateSettings.projectManager) {
+                        this.templateSettings.projectManager.initialize();
+                        // Make project manager globally accessible for startNewChat
+                        window.projectManager = this.templateSettings.projectManager;
+                    }
+                }, 500);
+            }
         }
     }
 
@@ -146,6 +161,12 @@ class ChatInterface {
         // Clear button
         if (this.elements.clearBtn) {
             this.elements.clearBtn.addEventListener('click', () => this.clearChat());
+        }
+
+        // New Chat button
+        const newChatBtn = document.getElementById('newChatBtn');
+        if (newChatBtn) {
+            newChatBtn.addEventListener('click', () => this.startNewChat());
         }
 
         // Prompt selection change
@@ -355,6 +376,14 @@ class ChatInterface {
         if (this.isLoading) return;
 
         const files = this.templateUploadedFiles.map(f => f.filepath);
+
+        // Debug: Log exactly what's being sent
+        console.log('[ChatInterface] Sending compiled prompt:', {
+            prompt: compiledPrompt,
+            promptLength: compiledPrompt.length,
+            containsMarkdownLink: /\[([^\]]*)\]\(([^)]+)\)/.test(compiledPrompt),
+            containsUnderscores: /__/.test(compiledPrompt)
+        });
 
         // Show loading state
         this.setLoading(true);
@@ -602,6 +631,82 @@ class ChatInterface {
         if (this.promptBuilder) {
             this.promptBuilder.clearForm();
         }
+    }
+
+    /**
+     * Start a new chat (creates new conversation on claude.ai)
+     */
+    async startNewChat() {
+        if (this.isLoading) return;
+
+        try {
+            // Get active project UUID if any
+            const projectUuid = window.projectManager?.activeProject || null;
+
+            // Create new conversation on server (within project if one is active)
+            const response = await fetch('/api/conversations/new', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ project_uuid: projectUuid })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Clear local UI
+                this.elements.chatHistory.innerHTML = '';
+                this.showEmptyState();
+
+                // Use new session ID from server
+                this.sessionId = data.session_id || this.generateSessionId();
+
+                // Clear files
+                this.uploadedFiles = [];
+                this.templateUploadedFiles = [];
+                this.renderUploadedFiles('simple');
+                this.renderUploadedFiles('template');
+
+                // Clear inputs
+                if (this.elements.messageInput) {
+                    this.elements.messageInput.value = '';
+                }
+
+                // Clear prompt builder
+                if (this.promptBuilder) {
+                    this.promptBuilder.clearForm();
+                }
+
+                // Show success notification
+                this.showNotification('New chat started', 'success');
+            } else {
+                this.showNotification(data.error || 'Failed to start new chat', 'error');
+            }
+        } catch (error) {
+            console.error('Failed to start new chat:', error);
+            this.showNotification('Failed to start new chat', 'error');
+        }
+    }
+
+    /**
+     * Show notification toast
+     */
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-4 py-2 rounded-lg shadow-lg text-white z-50 transition-opacity duration-300 ${
+            type === 'success' ? 'bg-green-500' :
+            type === 'error' ? 'bg-red-500' :
+            'bg-blue-500'
+        }`;
+        notification.textContent = message;
+
+        document.body.appendChild(notification);
+
+        // Auto-remove after 3 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     /**

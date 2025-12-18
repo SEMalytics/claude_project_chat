@@ -523,6 +523,45 @@ body.dark .template-option:hover {
 }
 
 /* =============================================================================
+   Settings Modal Styles
+   ============================================================================= */
+
+#settingsModal .category-group {
+    transition: all 0.15s ease;
+}
+
+#settingsModal .category-group:hover {
+    border-color: #93c5fd;
+}
+
+#settingsModal label:hover {
+    background-color: #f9fafb;
+}
+
+#settingsModal .template-toggle {
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+#settingsModal .template-toggle:checked {
+    background-color: #2563eb;
+}
+
+/* Settings button pulse animation when no templates enabled */
+#settingsBtn.warning {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* =============================================================================
    Print Styles
    ============================================================================= */
 

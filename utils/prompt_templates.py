@@ -3,12 +3,18 @@ Prompt template data models and default templates.
 
 Provides the data structures and built-in templates for the
 dynamic prompt template system.
+
+Supports loading custom/private prompts from custom_prompts.yaml
+which is gitignored for project-specific templates.
 """
 
+import os
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional, Dict, Any
 from enum import Enum
+
+import yaml
 
 
 class VariableType(str, Enum):
@@ -1179,3 +1185,134 @@ def variable_to_dict(variable: PromptVariable) -> Dict[str, Any]:
         }
 
     return result
+
+
+# =============================================================================
+# Custom Prompts Loading (from custom_prompts.yaml)
+# =============================================================================
+
+CUSTOM_PROMPTS_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(__file__)),
+    'custom_prompts.yaml'
+)
+
+
+def load_custom_prompts() -> Dict[str, Any]:
+    """
+    Load custom prompts from custom_prompts.yaml if it exists.
+
+    Returns:
+        Dictionary with 'categories' and 'templates' keys
+    """
+    if not os.path.exists(CUSTOM_PROMPTS_FILE):
+        return {'categories': [], 'templates': []}
+
+    try:
+        with open(CUSTOM_PROMPTS_FILE, 'r', encoding='utf-8') as f:
+            data = yaml.safe_load(f) or {}
+
+        return {
+            'categories': data.get('categories', []),
+            'templates': data.get('templates', [])
+        }
+    except Exception as e:
+        print(f"Warning: Failed to load custom prompts: {e}")
+        return {'categories': [], 'templates': []}
+
+
+def yaml_variable_to_dict(var: Dict) -> Dict[str, Any]:
+    """Convert a variable from YAML format to frontend-compatible dict."""
+    result = {
+        "name": var.get('name', ''),
+        "label": var.get('label', var.get('name', '')),
+        "type": var.get('type', 'text'),
+        "required": var.get('required', False),
+        "placeholder": var.get('placeholder', ''),
+        "defaultValue": var.get('default_value', var.get('defaultValue', '')),
+        "options": var.get('options', []),
+        "helpText": var.get('help_text', var.get('helpText', ''))
+    }
+
+    # Handle validation rules
+    validation = var.get('validation', {})
+    if validation:
+        result["validation"] = {
+            "pattern": validation.get('pattern'),
+            "minLength": validation.get('min_length', validation.get('minLength')),
+            "maxLength": validation.get('max_length', validation.get('maxLength')),
+            "min": validation.get('min', validation.get('min_value')),
+            "max": validation.get('max', validation.get('max_value')),
+            "errorMessage": validation.get('error_message', validation.get('errorMessage'))
+        }
+
+    return result
+
+
+def yaml_template_to_dict(template: Dict) -> Dict[str, Any]:
+    """Convert a template from YAML format to frontend-compatible dict."""
+    return {
+        "id": template.get('id', ''),
+        "name": template.get('name', ''),
+        "description": template.get('description', ''),
+        "category": template.get('category', 'general'),
+        "template": template.get('template', ''),
+        "variables": [yaml_variable_to_dict(v) for v in template.get('variables', [])],
+        "examples": template.get('examples', []),
+        "tags": template.get('tags', []),
+        "isCustom": True,  # Mark all custom prompts
+        "isPublic": template.get('is_public', False),
+        "isFavorite": template.get('is_favorite', False),
+        "createdBy": template.get('created_by'),
+        "createdAt": template.get('created_at'),
+        "updatedAt": template.get('updated_at'),
+        "useCount": template.get('use_count', 0)
+    }
+
+
+def yaml_category_to_dict(category: Dict) -> Dict[str, Any]:
+    """Convert a category from YAML format to frontend-compatible dict."""
+    return {
+        "id": category.get('id', ''),
+        "name": category.get('name', ''),
+        "description": category.get('description', ''),
+        "icon": category.get('icon', ''),
+        "color": category.get('color', '#3b82f6')
+    }
+
+
+def get_all_templates() -> List[Dict]:
+    """
+    Get all templates (default + custom) as dictionaries.
+    Custom templates are loaded from custom_prompts.yaml.
+    """
+    # Start with default templates
+    all_templates = [template_to_dict(t) for t in DEFAULT_TEMPLATES]
+
+    # Load and add custom templates
+    custom_data = load_custom_prompts()
+    custom_templates = [yaml_template_to_dict(t) for t in custom_data.get('templates', [])]
+
+    # Add custom templates (they'll appear after defaults)
+    all_templates.extend(custom_templates)
+
+    return all_templates
+
+
+def get_all_categories() -> List[Dict]:
+    """
+    Get all categories (default + custom) as dictionaries.
+    Custom categories are loaded from custom_prompts.yaml.
+    """
+    # Start with default categories
+    all_categories = get_default_categories()
+    default_ids = {c['id'] for c in all_categories}
+
+    # Load and add custom categories (avoid duplicates)
+    custom_data = load_custom_prompts()
+    for cat in custom_data.get('categories', []):
+        cat_dict = yaml_category_to_dict(cat)
+        if cat_dict['id'] not in default_ids:
+            all_categories.append(cat_dict)
+            default_ids.add(cat_dict['id'])
+
+    return all_categories

@@ -14,50 +14,92 @@ A universal web-based chat interface for ANY Claude Project via the Anthropic AP
 
 ## Quick Start
 
-### 1. Clone/Setup
+### 1. Clone and Navigate
 
 ```bash
+git clone https://github.com/SEMalytics/claude_project_chat.git
 cd claude_project_chat
+```
 
-# Create virtual environment
-python3.11 -m venv venv
+### 2. Create Virtual Environment
+
+```bash
+# Remove any existing venv (if reinstalling)
+rm -rf venv
+
+# Create fresh virtual environment
+python3 -m venv venv
+
+# Activate it
 source venv/bin/activate  # macOS/Linux
 # OR: venv\Scripts\activate  # Windows
 ```
 
-### 2. Install Dependencies
+### 3. Install Dependencies
 
 ```bash
+# Upgrade pip first
+pip install --upgrade pip
+
+# Install all dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Configure
+### 4. Configure Environment
 
 ```bash
 # Copy example env file
 cp .env.example .env
 
-# Edit .env with your credentials
+# Edit .env with your credentials (use any text editor)
+nano .env  # or: code .env, vim .env, etc.
 ```
 
-Add to `.env`:
+Add your credentials to `.env`:
 ```
-ANTHROPIC_API_KEY=sk-ant-api03-xxx
+ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
 CLAUDE_PROJECT_ID=your-project-uuid-here
 ```
 
 **Getting Your Claude Project UUID:**
 1. Open your Claude Project at [claude.ai](https://claude.ai)
 2. Look at the URL: `https://claude.ai/project/{PROJECT_UUID}`
-3. Copy the UUID
+3. Copy the UUID (e.g., `019b2d71-59d5-707d-9fbe-e419324275e7`)
 
-### 4. Run
+### 5. Run the Server
 
 ```bash
 python app.py
 ```
 
-Open http://127.0.0.1:5000 in your browser.
+You should see:
+```
+==================================================
+  Claude Chat
+  Powered by Anthropic
+==================================================
+
+  Server starting at http://127.0.0.1:5000
+  Press Ctrl+C to stop
+```
+
+### 6. Open in Browser
+
+Navigate to: **http://127.0.0.1:5000**
+
+### Next Time (Quick Start)
+
+```bash
+cd claude_project_chat
+./venv/bin/python app.py
+```
+
+Or with activation:
+```bash
+cd claude_project_chat
+source venv/bin/activate
+python app.py
+```
 
 ## Configuration
 
@@ -110,24 +152,28 @@ No code changes needed.
 
 ```
 claude_project_chat/
-├── app.py                 # Flask server
-├── config.py              # Configuration loader
-├── project_config.yaml    # Project-specific settings (EDIT THIS)
-├── requirements.txt       # Python dependencies
-├── .env                   # API keys (EDIT THIS)
-├── .env.example           # Example environment file
-├── .gitignore             # Git ignore patterns
+├── app.py                   # Flask server with API routes
+├── config.py                # Configuration loader
+├── project_config.yaml      # Project-specific settings (EDIT THIS)
+├── requirements.txt         # Python dependencies
+├── .env                     # API keys (EDIT THIS, not in git)
+├── .env.example             # Example environment file
+├── .gitignore               # Git ignore patterns
 ├── static/
-│   ├── css/styles.css     # Custom styles
-│   ├── js/app.js          # Frontend JavaScript
-│   └── uploads/           # Temporary file storage
+│   ├── css/styles.css       # Custom styles
+│   ├── js/
+│   │   ├── app.js           # Main frontend JavaScript
+│   │   └── prompt-builder.js # Template UI component
+│   └── uploads/             # Temporary file storage
 ├── templates/
-│   └── index.html         # Chat interface template
+│   └── index.html           # Chat interface template
 └── utils/
     ├── __init__.py
-    ├── claude_client.py   # Anthropic API wrapper
-    ├── file_processor.py  # File handling
-    └── url_fetcher.py     # URL content fetching
+    ├── claude_client.py     # Anthropic API wrapper
+    ├── file_processor.py    # File handling
+    ├── url_fetcher.py       # URL content fetching
+    ├── prompt_templates.py  # 20+ built-in templates
+    └── prompt_compiler.py   # Template compilation
 ```
 
 ## API Endpoints
@@ -212,6 +258,26 @@ prompts:
 ### "Module not found" errors
 - Activate virtual environment: `source venv/bin/activate`
 - Install dependencies: `pip install -r requirements.txt`
+
+### Pip installs to wrong Python / "site-packages is not writeable"
+If you see "Defaulting to user installation because normal site-packages is not writeable", your shell has conflicting Python aliases. Use the venv binaries directly:
+
+```bash
+# Install using venv pip directly
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -r requirements.txt
+
+# Run using venv python directly
+./venv/bin/python app.py
+```
+
+Or recreate the venv completely:
+```bash
+rm -rf venv
+python3 -m venv venv
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install -r requirements.txt
+```
 
 ## Development
 
