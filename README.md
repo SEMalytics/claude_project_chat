@@ -8,6 +8,8 @@ A powerful workbench for testing and refining Claude-powered workflows, agents, 
 
 **This workbench solves that** by giving you:
 
+> ⚠️ **Note:** This tool uses cookie-based authentication to access Claude.ai directly because the [Claude Projects API is currently in beta](https://docs.anthropic.com/en/docs/build-with-claude/projects) and not publicly available. Once Anthropic releases the official Projects API, this tool can be updated to use proper API authentication instead of browser cookies. Until then, this is a practical workaround for teams who need to test their Projects programmatically.
+
 - **Direct access to your Claude Projects** - Test your agents with their full knowledge bases
 - **Reusable prompt templates** - Build, save, and iterate on prompts with variables
 - **Tool execution** - Claude can fetch web pages and search the web during analysis
