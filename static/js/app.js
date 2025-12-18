@@ -534,11 +534,50 @@ class ChatInterface {
                 : 'bg-gray-100 text-gray-800'
         }`;
 
-        // Add role label
-        const roleLabel = document.createElement('div');
-        roleLabel.className = `text-xs font-medium mb-1 ${isUser ? 'text-blue-200' : 'text-gray-500'}`;
+        // Add header with role label and copy button for assistant
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'flex items-center justify-between mb-1';
+
+        const roleLabel = document.createElement('span');
+        roleLabel.className = `text-xs font-medium ${isUser ? 'text-blue-200' : 'text-gray-500'}`;
         roleLabel.textContent = isUser ? 'You' : 'Claude';
-        contentDiv.appendChild(roleLabel);
+        headerDiv.appendChild(roleLabel);
+
+        // Add copy button for assistant messages
+        if (!isUser) {
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'text-xs text-gray-400 hover:text-gray-600 flex items-center gap-1 transition-colors';
+            copyBtn.innerHTML = `
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <span>Copy</span>
+            `;
+            copyBtn.onclick = async () => {
+                try {
+                    await navigator.clipboard.writeText(content);
+                    copyBtn.innerHTML = `
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-green-500">Copied!</span>
+                    `;
+                    setTimeout(() => {
+                        copyBtn.innerHTML = `
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Copy</span>
+                        `;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            };
+            headerDiv.appendChild(copyBtn);
+        }
+
+        contentDiv.appendChild(headerDiv);
 
         // Add template name for user messages if available
         if (isUser && templateName) {
