@@ -656,9 +656,17 @@ class PromptBuilder {
 
                         <div id="templateDropdown" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-hidden">
                             <div class="p-2 border-b border-gray-200">
-                                <input type="text" id="templateSearch"
-                                       placeholder="Search templates..."
-                                       class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <div class="relative">
+                                    <input type="text" id="templateSearch"
+                                           placeholder="Search templates..."
+                                           class="w-full border border-gray-300 rounded p-2 pr-8 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <button type="button" id="clearTemplateSearch"
+                                            class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                             <div class="flex border-b border-gray-200">
                                 <div id="categoryTabs" class="flex flex-wrap gap-1 p-2 overflow-x-auto">
@@ -1013,9 +1021,31 @@ class PromptBuilder {
 
         // Template search
         const searchInput = document.getElementById('templateSearch');
+        const clearSearchBtn = document.getElementById('clearTemplateSearch');
+
         searchInput?.addEventListener('input', (e) => {
             const activeCategory = document.querySelector('.category-tab.active')?.dataset.category || 'all';
             this.renderTemplateList(e.target.value, activeCategory);
+
+            // Show/hide clear button
+            if (clearSearchBtn) {
+                if (e.target.value.trim()) {
+                    clearSearchBtn.classList.remove('hidden');
+                } else {
+                    clearSearchBtn.classList.add('hidden');
+                }
+            }
+        });
+
+        // Clear search button
+        clearSearchBtn?.addEventListener('click', () => {
+            if (searchInput) {
+                searchInput.value = '';
+                searchInput.focus();
+                clearSearchBtn.classList.add('hidden');
+                const activeCategory = document.querySelector('.category-tab.active')?.dataset.category || 'all';
+                this.renderTemplateList('', activeCategory);
+            }
         });
 
         // Category tabs
