@@ -487,6 +487,8 @@ class ClaudeWebClient:
         if response.status_code in (200, 201):
             result = response.json()
             self._conversation_id = result.get('uuid', new_uuid)
+            # Clear the original project_conversation_id so the new one is used
+            self.project_conversation_id = None
             return self._conversation_id
         else:
             raise ValueError(f"Failed to create conversation: {response.status_code}")
