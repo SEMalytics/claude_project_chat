@@ -475,24 +475,61 @@ def update_cookie():
 
 
 def _update_env_cookie(new_cookie: str):
-    """Update the CLAUDE_COOKIE in .env file."""
+    """Update the CLAUDE_COOKIE in .env file with validation."""
     import re
-    env_path = '.env'
-
+    import shutil
+    from pathlib import Path
+    
+    env_path = Path('.env')
+    
     try:
-        with open(env_path, 'r') as f:
-            content = f.read()
-
+        # Validate cookie format
+        if not new_cookie or '\n' in new_cookie or '\r' in new_cookie:
+            raise ValueError('Invalid cookie format: contains newlines')
+        
+        if 'sessionKey=' not in new_cookie:
+            raise ValueError('Invalid cookie: missing sessionKey')
+        
+        # Sanitize: remove any control characters
+        new_cookie = ''.join(c for c in new_cookie if c.isprintable() or c in '\t')
+        
+        # Read current content
+        if not env_path.exists():
+            raise FileNotFoundError('.env file not found')
+            
+        content = env_path.read_text()
+        
+        # Create backup before modifying
+        backup_path = env_path.with_suffix('.env.backup')
+        shutil.copy2(env_path, backup_path)
+        
         # Replace the CLAUDE_COOKIE line
         pattern = r'^CLAUDE_COOKIE=.*$'
         replacement = f'CLAUDE_COOKIE={new_cookie}'
         new_content = re.sub(pattern, replacement, content, flags=re.MULTILINE)
-
-        with open(env_path, 'w') as f:
-            f.write(new_content)
-
+        
+        # Verify the replacement worked
+        if 'CLAUDE_COOKIE=' not in new_content:
+            raise ValueError('Failed to update CLAUDE_COOKIE in .env')
+        
+        # Write atomically (write to temp, then rename)
+        temp_path = env_path.with_suffix('.env.tmp')
+        temp_path.write_text(new_content)
+        temp_path.replace(env_path)
+        
+        # Clean up backup on success
+        backup_path.unlink()
+        
+        app.logger.info('Successfully updated CLAUDE_COOKIE in .env')
+        
     except Exception as e:
         app.logger.error(f'Failed to update .env: {e}')
+        # Restore from backup if it exists
+        backup_path = Path('.env.backup')
+        if backup_path.exists():
+            shutil.copy2(backup_path, env_path)
+            backup_path.unlink()
+        raise
 
 
 @app.route('/api/conversations/new', methods=['POST'])

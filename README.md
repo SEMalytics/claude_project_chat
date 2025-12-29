@@ -2,6 +2,8 @@
 
 A powerful workbench for testing and refining Claude-powered workflows, agents, and prompts.
 
+> ⚠️ **SECURITY WARNING:** This tool is designed for **local development only**. Do NOT expose it to your network or the internet without adding proper authentication. It has no built-in access controls and anyone who can reach the server can use your API credentials and access your conversations.
+
 ## Why This Tool?
 
 **Claude Projects** lets you create custom AI assistants with specific instructions and knowledge bases. But testing those workflows requires switching between the Claude.ai interface, copying prompts, and manually iterating.
