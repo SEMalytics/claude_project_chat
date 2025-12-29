@@ -526,6 +526,11 @@ def get_claude_web_client() -> Optional[ClaudeWebClient]:
     cookie = os.getenv('CLAUDE_COOKIE')
     if not cookie:
         return None
+    
+    # Normalize cookie format: if it's just the value, wrap it with sessionKey=
+    cookie = cookie.strip()
+    if cookie and not cookie.startswith('sessionKey='):
+        cookie = f'sessionKey={cookie}'
 
     conversation_id = os.getenv('CLAUDE_CONVERSATION_ID')
     return ClaudeWebClient(cookie, conversation_id)
