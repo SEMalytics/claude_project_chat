@@ -12,6 +12,7 @@ class ChatInterface {
         this.config = window.APP_CONFIG || {};
         this.activeTab = 'templates';
         this.promptBuilder = null;
+        this.snippetManager = new SnippetManager();
 
         this.init();
     }
@@ -25,6 +26,7 @@ class ChatInterface {
         this.initPromptBuilder();
         this.initTabs();
         this.updatePromptUI();
+        this.renderSnippetButtons();
     }
 
     /**
@@ -226,6 +228,87 @@ class ChatInterface {
                 }
             });
         }
+
+        // Snippet buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('snippet-btn')) {
+                this.appendSnippet(e.target.dataset.snippet);
+            }
+        });
+
+        // Snippet management modal
+        const manageSnippetsBtn = document.getElementById('manageSnippetsBtn');
+        if (manageSnippetsBtn) {
+            manageSnippetsBtn.addEventListener('click', () => this.openSnippetModal());
+        }
+
+        const closeSnippetModal = document.getElementById('closeSnippetModal');
+        if (closeSnippetModal) {
+            closeSnippetModal.addEventListener('click', () => this.closeSnippetModal());
+        }
+
+        const closeSnippetModalBtn = document.getElementById('closeSnippetModalBtn');
+        if (closeSnippetModalBtn) {
+            closeSnippetModalBtn.addEventListener('click', () => this.closeSnippetModal());
+        }
+
+        const addSnippetBtn = document.getElementById('addSnippetBtn');
+        if (addSnippetBtn) {
+            addSnippetBtn.addEventListener('click', () => this.addSnippet());
+        }
+
+        const newSnippetInput = document.getElementById('newSnippetInput');
+        if (newSnippetInput) {
+            newSnippetInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.addSnippet();
+                }
+            });
+        }
+
+        const resetSnippetsBtn = document.getElementById('resetSnippetsBtn');
+        if (resetSnippetsBtn) {
+            resetSnippetsBtn.addEventListener('click', () => this.resetSnippets());
+        }
+    }
+
+    /**
+     * Append snippet to active snippets list
+     */
+    appendSnippet(snippetText) {
+        if (!this.activeSnippets) {
+            this.activeSnippets = [];
+        }
+        
+        if (!this.activeSnippets.includes(snippetText)) {
+            this.activeSnippets.push(snippetText);
+            this.updateSnippetDisplay();
+        }
+    }
+
+    /**
+     * Update snippet display
+     */
+    updateSnippetDisplay() {
+        const snippetBtns = document.querySelectorAll('.snippet-btn');
+        snippetBtns.forEach(btn => {
+            if (this.activeSnippets && this.activeSnippets.includes(btn.dataset.snippet)) {
+                btn.classList.add('bg-blue-500', 'text-white');
+                btn.classList.remove('bg-gray-200', 'text-gray-700');
+            } else {
+                btn.classList.remove('bg-blue-500', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            }
+        });
+    }
+
+    /**
+     * Clear active snippets
+     */
+    clearSnippets() {
+        this.activeSnippets = [];
+        this.updateSnippetDisplay();
     }
 
     /**
@@ -250,14 +333,20 @@ class ChatInterface {
      * Send a quick follow-up message
      */
     async sendQuickMessage() {
-        const message = this.elements.quickInput?.value?.trim();
+        let message = this.elements.quickInput?.value?.trim();
         if (!message || this.isLoading) return;
+
+        // Append active snippets
+        if (this.activeSnippets && this.activeSnippets.length > 0) {
+            message += '\n\n' + this.activeSnippets.join('\n');
+        }
 
         // Add user message to chat
         this.addMessage('user', message);
 
-        // Clear input
+        // Clear input and snippets
         this.elements.quickInput.value = '';
+        this.clearSnippets();
 
         // Hide empty state
         this.elements.emptyState?.classList.add('hidden');
@@ -477,6 +566,11 @@ class ChatInterface {
 
         const files = this.templateUploadedFiles.map(f => f.filepath);
 
+        // Append active snippets
+        if (this.activeSnippets && this.activeSnippets.length > 0) {
+            compiledPrompt += '\n\n' + this.activeSnippets.join('\n');
+        }
+
         // Debug: Log exactly what's being sent
         console.log('[ChatInterface] Sending compiled prompt:', {
             prompt: compiledPrompt,
@@ -517,9 +611,10 @@ class ChatInterface {
             // Add assistant response to chat
             this.addMessage('assistant', data.response, [], null, data.tool_stats);
 
-            // Clear template files
+            // Clear template files and snippets
             this.templateUploadedFiles = [];
             this.renderUploadedFiles('template');
+            this.clearSnippets();
 
             // Clear the prompt builder form
             if (this.promptBuilder) {
@@ -1003,6 +1098,205 @@ class ChatInterface {
      */
     hideEmptyState() {
         this.elements.emptyState?.classList.add('hidden');
+    }
+
+    /**
+     * Render snippet buttons
+     */
+    renderSnippetButtons() {
+        const container = document.getElementById('snippetButtonsContainer');
+        if (!container) return;
+
+        const snippets = this.snippetManager.getAll();
+        container.innerHTML = snippets.map(snippet => `
+            <button type="button" class="snippet-btn px-3 py-1.5 text-sm bg-white hover:bg-blue-500 hover:text-white border border-blue-300 text-gray-700 rounded transition-colors" data-snippet="${this.escapeHtml(snippet)}">
+                ${this.escapeHtml(snippet)}
+            </button>
+        `).join('');
+    }
+
+    /**
+     * Open snippet management modal
+     */
+    openSnippetModal() {
+        const modal = document.getElementById('snippetModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            this.renderSnippetList();
+        }
+    }
+
+    /**
+     * Close snippet management modal
+     */
+    closeSnippetModal() {
+        const modal = document.getElementById('snippetModal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+        const input = document.getElementById('newSnippetInput');
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    /**
+     * Render snippet list in modal
+     */
+    renderSnippetList() {
+        const container = document.getElementById('snippetList');
+        if (!container) return;
+
+        const snippets = this.snippetManager.getAll();
+        
+        if (snippets.length === 0) {
+            container.innerHTML = '<p class="text-sm text-gray-400 text-center py-4">No snippets yet. Add one above!</p>';
+            return;
+        }
+
+        container.innerHTML = snippets.map((snippet, index) => `
+            <div class="flex items-center gap-2 p-2 bg-gray-50 rounded-lg border border-gray-200">
+                <div class="flex flex-col gap-1">
+                    <button class="snippet-move-up text-gray-400 hover:text-blue-600 ${index === 0 ? 'invisible' : ''}" data-snippet="${this.escapeHtml(snippet)}">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                    </button>
+                    <button class="snippet-move-down text-gray-400 hover:text-blue-600 ${index === snippets.length - 1 ? 'invisible' : ''}" data-snippet="${this.escapeHtml(snippet)}">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                </div>
+                <input type="text" class="snippet-edit-input flex-1 px-2 py-1 text-sm border border-gray-300 rounded" value="${this.escapeHtml(snippet)}" data-original="${this.escapeHtml(snippet)}">
+                <button class="snippet-delete text-red-500 hover:text-red-700" data-snippet="${this.escapeHtml(snippet)}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+            </div>
+        `).join('');
+
+        // Add event listeners for edit, delete, and move
+        container.querySelectorAll('.snippet-edit-input').forEach(input => {
+            input.addEventListener('blur', (e) => this.updateSnippet(e.target));
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.target.blur();
+                }
+            });
+        });
+
+        container.querySelectorAll('.snippet-delete').forEach(btn => {
+            btn.addEventListener('click', (e) => this.deleteSnippet(btn.dataset.snippet));
+        });
+
+        container.querySelectorAll('.snippet-move-up').forEach(btn => {
+            btn.addEventListener('click', (e) => this.moveSnippetUp(btn.dataset.snippet));
+        });
+
+        container.querySelectorAll('.snippet-move-down').forEach(btn => {
+            btn.addEventListener('click', (e) => this.moveSnippetDown(btn.dataset.snippet));
+        });
+    }
+
+    /**
+     * Add new snippet
+     */
+    addSnippet() {
+        const input = document.getElementById('newSnippetInput');
+        if (!input) return;
+
+        const text = input.value.trim();
+        if (!text) return;
+
+        try {
+            this.snippetManager.add(text);
+            input.value = '';
+            this.renderSnippetList();
+            this.renderSnippetButtons();
+            this.showNotification('Snippet added', 'success');
+        } catch (error) {
+            this.showNotification(error.message, 'error');
+        }
+    }
+
+    /**
+     * Update snippet
+     */
+    updateSnippet(inputElement) {
+        const oldText = inputElement.dataset.original;
+        const newText = inputElement.value.trim();
+
+        if (newText === oldText) return;
+
+        try {
+            this.snippetManager.update(oldText, newText);
+            inputElement.dataset.original = newText;
+            this.renderSnippetButtons();
+            this.showNotification('Snippet updated', 'success');
+        } catch (error) {
+            this.showNotification(error.message, 'error');
+            inputElement.value = oldText;
+        }
+    }
+
+    /**
+     * Delete snippet
+     */
+    deleteSnippet(snippetText) {
+        if (!confirm(`Delete snippet: "${snippetText}"?`)) return;
+
+        try {
+            this.snippetManager.delete(snippetText);
+            this.renderSnippetList();
+            this.renderSnippetButtons();
+            this.showNotification('Snippet deleted', 'success');
+        } catch (error) {
+            this.showNotification(error.message, 'error');
+        }
+    }
+
+    /**
+     * Move snippet up
+     */
+    moveSnippetUp(snippetText) {
+        if (this.snippetManager.moveUp(snippetText)) {
+            this.renderSnippetList();
+            this.renderSnippetButtons();
+        }
+    }
+
+    /**
+     * Move snippet down
+     */
+    moveSnippetDown(snippetText) {
+        if (this.snippetManager.moveDown(snippetText)) {
+            this.renderSnippetList();
+            this.renderSnippetButtons();
+        }
+    }
+
+    /**
+     * Reset snippets to defaults
+     */
+    resetSnippets() {
+        if (!confirm('Reset all snippets to defaults? This will delete your custom snippets.')) return;
+
+        this.snippetManager.reset();
+        this.renderSnippetList();
+        this.renderSnippetButtons();
+        this.showNotification('Snippets reset to defaults', 'success');
+    }
+
+    /**
+     * Escape HTML for safe rendering
+     */
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
 
     /**

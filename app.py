@@ -32,6 +32,7 @@ from utils.prompt_compiler import (
     preview_compiled_prompt,
     extract_variables
 )
+from utils.port_manager import check_and_handle_port
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -828,6 +829,13 @@ if __name__ == '__main__':
     print(f"  {project_config.get('ui.title', 'Prompt Engineering Workbench')}")
     print(f"  {project_config.get('ui.subtitle', '')}")
     print(f"{'='*50}")
+    
+    # Only check port in main process, not in Flask reloader's child process
+    if not os.environ.get('WERKZEUG_RUN_MAIN'):
+        if not check_and_handle_port(Config.HOST, Config.PORT):
+            print("\nServer startup cancelled.")
+            exit(1)
+    
     print(f"\n  Server starting at http://{Config.HOST}:{Config.PORT}")
     print(f"  Press Ctrl+C to stop\n")
 
